@@ -2,11 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import authRouter from './controllers/auth.js';
 import dotenv from 'dotenv';
+import { PORT } from './utils/config.js';
 
 dotenv.config();
 
 const app: express.Application = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
