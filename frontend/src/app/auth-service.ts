@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -40,8 +40,13 @@ interface LoginRequest {
 export class AuthService {
 	private http: HttpClient = inject(HttpClient);
 
+	private authToken: string | null = localStorage.getItem('authToken');
+	private currentUser: UserResponse | null = null;
+
 	login(request: LoginRequest): Observable<LoginResponse> {
-		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, request);
+		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, request)
+			.pipe(tap((response: LoginResponse) => { this.setToken(response.token); }))
+			.pipe(tap((response: LoginResponse) => { this.currentUser = response.user; }));
 	}
 
 	register(request: RegisterRequest): Observable<RegisterResponse> {
@@ -51,4 +56,12 @@ export class AuthService {
 	me(): Observable<UserResponse> {
 		return this.http.get<UserResponse>(`${API_URL}/auth/me`);
 	}
+
+	private setToken(token: string): void {
+		this.authToken = token;
+		localStorage.setItem('authToken', token);
+	}
+
+	getToken(): string | null { return this.authToken; }
+	getCurrentUser(): UserResponse | null { return this.currentUser; }
 }
