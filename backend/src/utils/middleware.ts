@@ -4,6 +4,25 @@ import { users } from '../data/users.js';
 import type { User } from '../models/user.js';
 import { SECRET } from './config.js';
 
+export const loggerMiddleware = (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): void => {
+	const startedAt = new Date();
+
+	console.log(`[${startedAt.toISOString()}] Started ${request.method} ${request.originalUrl}`);
+
+	response.on("finish", () => {
+		const endedAt = new Date();
+		const duration: number = endedAt.getTime() - startedAt.getTime();
+
+		console.log(`[${endedAt.toISOString()}] Finished ${request.method} ${request.originalUrl} ${response.statusCode} (${duration}ms)`);
+	});
+
+	next();
+};
+
 export const tokenExtractor: (request: Request, response: Response, next: NextFunction) => void = (request: Request, response: Response, next: NextFunction) => {
 	const authorization: string | undefined = request.get('authorization');
 	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
