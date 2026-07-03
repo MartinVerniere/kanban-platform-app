@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { AuthService } from '../auth-service';
+import { Router } from '@angular/router';
 
 interface LoginModel {
 	username: string;
@@ -15,11 +16,13 @@ interface LoginModel {
 })
 export class Login {
 	authService = inject(AuthService);
+	router = inject(Router);
 
 	loginModel = signal<LoginModel>({
 		username: '',
 		password: '',
 	});
+	error = signal<string | null>(null);
 
 	loginForm = form(this.loginModel, (fieldPath) => {
 		required(fieldPath.username, { message: 'Username is required' });
@@ -34,9 +37,12 @@ export class Login {
 				next: (response) => {
 					console.log('User logged in successfully:', response);
 					this.resetForm();
+					this.error.set(null);
+					this.router.navigate(['/']);
 				},
 				error: (error) => {
 					console.error('Error logging in user:', error);
+					this.error.set(error.error.message);
 				}
 			});
 		});
