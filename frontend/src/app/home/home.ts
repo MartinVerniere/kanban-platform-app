@@ -11,9 +11,16 @@ import { RouterLink } from '@angular/router';
 export class Home {
 	private healthService = inject(Health);
 
-	async onClick() {
+	onClick() {
 		console.log('Checking health status...');
-		const response = await this.healthService.getHealthStatus();
-		console.log('Health status:', response.status);
+
+		this.healthService.getHealthStatus().subscribe({
+			next: (response) => {
+				console.log('Health status:', response);
+			},
+			error: (error) => {
+				console.error('Error fetching health status:', error);
+			}
+		});
 	}
 }

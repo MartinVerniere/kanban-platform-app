@@ -1,4 +1,6 @@
-import { Service } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { Observable } from 'rxjs/internal/Observable';
 
 interface HealthResponse {
 	status: string;
@@ -6,10 +8,9 @@ interface HealthResponse {
 
 @Service()
 export class Health {
+	http: HttpClient = inject(HttpClient);
 	
-	async getHealthStatus(): Promise<HealthResponse> {
-		const response = await fetch('http://localhost:3000/health');
-		const data = await response.json();
-		return data as HealthResponse;
-	}
+	getHealthStatus(): Observable<HealthResponse> {
+		return this.http.get<HealthResponse>('http://localhost:3000/health');
+	  }
 }
