@@ -2,7 +2,8 @@
 	<div class="form-grid">
 		<div class="form-group">
 			<label class="form-label" for="username"> Username </label>
-			<input id="username" class="form-control" type="text" placeholder="Enter a username" [formField]="registerForm.username" />
+			<input id="username" class="form-control" type="text" placeholder="Enter a username"
+				[formField]="registerForm.username" />
 
 			@if (registerForm.username().invalid() && registerForm.username().touched()) {
 			<div class="error">
@@ -15,7 +16,8 @@
 
 		<div class="form-group">
 			<label class="form-label" for="email"> Email </label>
-			<input id="email" class="form-control" type="email" placeholder="Enter an email" [formField]="registerForm.email" />
+			<input id="email" class="form-control" type="email" placeholder="Enter an email"
+				[formField]="registerForm.email" />
 
 			@if (registerForm.email().invalid() && registerForm.email().touched()) {
 			<div class="error">
@@ -28,13 +30,22 @@
 
 		<div class="form-group">
 			<label class="form-label" for="password"> Password </label>
-			<input id="password" class="form-control" type="password" placeholder="Enter a password" [formField]="registerForm.password" />
+			<input id="password" class="form-control" type="password" placeholder="Enter a password"
+				[formField]="registerForm.password" />
 
 			@if (registerForm.password().invalid() && registerForm.password().touched()) {
 			<div class="error">
 				@for (error of registerForm.password().errors(); track error.kind) {
 				<span>{{ error.message }}</span>
 				}
+			</div>
+			}
+		</div>
+
+		<div class="form-error">
+			@if (error()) {
+			<div class="error">
+				<span>{{ error() }}</span>
 			</div>
 			}
 		</div>
