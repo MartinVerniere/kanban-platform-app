@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
 const API_URL = 'http://localhost:3000/api';
@@ -40,13 +40,16 @@ interface LoginRequest {
 export class AuthService {
 	private http: HttpClient = inject(HttpClient);
 
-	private authToken: string | null = localStorage.getItem('authToken');
-	private currentUser: UserResponse | null = null;
+	private authToken = signal<string | null>(localStorage.getItem('authToken'));
+	private currentUser = signal<any | null>(null);
+
+	isLoggedIn = computed(() => !!this.authToken());
+	user = this.currentUser.asReadonly();
 
 	login(request: LoginRequest): Observable<LoginResponse> {
 		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, request)
 			.pipe(tap((response: LoginResponse) => { this.setToken(response.token); }))
-			.pipe(tap((response: LoginResponse) => { this.currentUser = response.user; }));
+			.pipe(tap((response: LoginResponse) => { this.currentUser.set(response.user); }));
 	}
 
 	register(request: RegisterRequest): Observable<RegisterResponse> {
@@ -57,11 +60,17 @@ export class AuthService {
 		return this.http.get<UserResponse>(`${API_URL}/auth/me`);
 	}
 
+	logout() {
+		this.authToken.set(null);
+		this.currentUser.set(null);
+		localStorage.removeItem('authToken');
+	}
+
 	private setToken(token: string): void {
-		this.authToken = token;
+		this.authToken.set(token);
 		localStorage.setItem('authToken', token);
 	}
 
-	getToken(): string | null { return this.authToken; }
-	getCurrentUser(): UserResponse | null { return this.currentUser; }
+	getToken(): string | null { return this.authToken(); }
+	getCurrentUser(): UserResponse | null { return this.currentUser(); }
 }

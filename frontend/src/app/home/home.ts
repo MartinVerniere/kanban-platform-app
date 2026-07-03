@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Health } from '../services/health';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../auth-service';
 
 @Component({
 	selector: 'app-home',
@@ -10,6 +11,7 @@ import { RouterLink } from '@angular/router';
 })
 export class Home {
 	private healthService = inject(Health);
+	authService = inject(AuthService);
 
 	onClick() {
 		console.log('Checking health status...');
