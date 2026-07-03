@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://localhost:3000/api';
 
 interface LoginResponse {
 	token: string;
@@ -25,13 +25,13 @@ interface UserResponse {
 	email: string;
 }
 
-interface IRegister {
+interface RegisterRequest {
 	username: string;
 	email: string;
 	password: string;
 }
 
-interface ILogin {
+interface LoginRequest {
 	username: string;
 	password: string;
 }
@@ -40,12 +40,12 @@ interface ILogin {
 export class AuthService {
 	private http: HttpClient = inject(HttpClient);
 
-	login(loginModel: ILogin): Observable<LoginResponse> {
-		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, loginModel);
+	login(request: LoginRequest): Observable<LoginResponse> {
+		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, request);
 	}
 
-	register(registerModel: IRegister): Observable<RegisterResponse> {
-		return this.http.post<RegisterResponse>(`${API_URL}/auth/register`, registerModel);
+	register(request: RegisterRequest): Observable<RegisterResponse> {
+		return this.http.post<RegisterResponse>(`${API_URL}/auth/register`, request);
 	}
 
 	me(): Observable<UserResponse> {

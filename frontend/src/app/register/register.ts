@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../auth-service';
-import { email, form, required, submit } from '@angular/forms/signals';
+import { email, form, FormField, required, submit } from '@angular/forms/signals';
 
-interface IRegister {
+interface RegisterModel {
 	username: string;
 	email: string;
 	password: string;
@@ -10,14 +10,14 @@ interface IRegister {
 
 @Component({
 	selector: 'app-register',
-	imports: [],
+	imports: [FormField],
 	templateUrl: './register.html',
 	styleUrl: './register.css',
 })
 export class Register {
 	authService = inject(AuthService);
 
-	registerModel = signal<IRegister>({
+	registerModel = signal<RegisterModel>({
 		username: '',
 		email: '',
 		password: '',
@@ -34,8 +34,16 @@ export class Register {
 		event.preventDefault();
 
 		submit(this.registerForm, async () => {
-			this.authService.register(this.registerModel());
-			this.resetForm();
+			console.log('Registering user:', this.registerModel());
+			this.authService.register(this.registerModel()).subscribe({
+				next: (response) => {
+					console.log('User registered successfully:', response);
+					this.resetForm();
+				},
+				error: (error) => {
+					console.error('Error registering user:', error);
+				}
+			});
 		});
 	}
 

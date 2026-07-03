@@ -1,22 +1,22 @@
 import { Component, inject, signal } from '@angular/core';
-import { form, required, email, submit } from '@angular/forms/signals';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 import { AuthService } from '../auth-service';
 
-interface ILogin {
+interface LoginModel {
 	username: string;
 	password: string;
 }
 
 @Component({
-  selector: 'app-login',
-  imports: [],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+	selector: 'app-login',
+	imports: [FormField],
+	templateUrl: './login.html',
+	styleUrl: './login.css',
 })
 export class Login {
 	authService = inject(AuthService);
 
-	loginModel = signal<ILogin>({
+	loginModel = signal<LoginModel>({
 		username: '',
 		password: '',
 	});
@@ -30,8 +30,15 @@ export class Login {
 		event.preventDefault();
 
 		submit(this.loginForm, async () => {
-			this.authService.login(this.loginModel());
-			this.resetForm();
+			this.authService.login(this.loginModel()).subscribe({
+				next: (response) => {
+					console.log('User logged in successfully:', response);
+					this.resetForm();
+				},
+				error: (error) => {
+					console.error('Error logging in user:', error);
+				}
+			});
 		});
 	}
 
