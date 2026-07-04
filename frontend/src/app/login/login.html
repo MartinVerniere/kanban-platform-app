@@ -40,6 +40,9 @@
 			<button class="btn btn-primary" type="submit" [disabled]="loginForm().invalid()">
 				Login
 			</button>
+			<button class="btn btn-secondary" type="button" (click)="router.navigate(['/register'])">
+				Register
+			</button>
 		</div>
 	</div>
 </form>

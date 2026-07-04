@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
 const API_URL = 'http://localhost:3000/api';
@@ -39,6 +40,7 @@ interface LoginRequest {
 @Service()
 export class AuthService {
 	private http: HttpClient = inject(HttpClient);
+	private router: Router = inject(Router);
 
 	private authToken = signal<string | null>(localStorage.getItem('authToken'));
 	private currentUser = signal<any | null>(null);
@@ -64,6 +66,8 @@ export class AuthService {
 		this.authToken.set(null);
 		this.currentUser.set(null);
 		localStorage.removeItem('authToken');
+
+		this.router.navigate(['/login']);
 	}
 
 	private setToken(token: string): void {
