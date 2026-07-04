@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Health } from '../services/health';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../auth-service';
+import { AuthService } from '../services/auth-service';
 
 @Component({
 	selector: 'app-home',
