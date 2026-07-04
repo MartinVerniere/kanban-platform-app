@@ -2,3 +2,4 @@ node_modules
 dist
 .env
 requests.http
+/src/generated/prisma
