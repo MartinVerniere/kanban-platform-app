@@ -43,10 +43,20 @@ export class AuthService {
 	private router: Router = inject(Router);
 
 	private authToken = signal<string | null>(localStorage.getItem('authToken'));
-	private currentUser = signal<any | null>(null);
+	private currentUser = signal<UserResponse | null>(null);
 
 	isLoggedIn = computed(() => !!this.authToken());
 	user = this.currentUser.asReadonly();
+
+	initializeAuth(): void {
+		if (!this.authToken()) return;
+		
+		// If it has a token, check to which user it connects to, and set currentUser, if token is expired log out
+		this.me().subscribe({
+			next: (user) => this.currentUser.set(user),
+			error: () => this.logout()
+		});
+	}
 
 	login(request: LoginRequest): Observable<LoginResponse> {
 		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, request)
