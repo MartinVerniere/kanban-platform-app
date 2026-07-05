@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { AuthService } from '../services/auth-service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 interface LoginModel {
 	username: string;
@@ -10,7 +10,7 @@ interface LoginModel {
 
 @Component({
 	selector: 'app-login',
-	imports: [FormField],
+	imports: [FormField, RouterLink],
 	templateUrl: './login.html',
 	styleUrl: './login.css',
 })
