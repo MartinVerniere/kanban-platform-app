@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth-service';
 import { provideHttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
 import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
 
 describe('AuthService', () => {
@@ -69,46 +68,88 @@ describe('AuthService', () => {
 		});
 	});
 
-	it('should logout correctly', () => {
-		localStorage.setItem('authToken', 'abc');
+	describe('When token exists in local storage', () => {
+		beforeEach(() => {
+			vi.clearAllMocks();
 
-		service.logout();
+			localStorage.clear();
+			localStorage.setItem('authToken', 'abc');
 
-		expect(service.getToken()).toBe(null);
-		expect(service.getCurrentUser()).toBe(null);
-		expect(localStorage.getItem('authToken')).toBe(null);
-		expect(routerMock.navigate).toHaveBeenCalledWith(['/login']);
-	});
+			TestBed.resetTestingModule();
+			TestBed.configureTestingModule({
+				providers: [
+					provideHttpClient(),
+					provideHttpClientTesting(),
+					{ provide: Router, useValue: routerMock },
+				]
+			});
 
-	it('should me correctly', () => {
-		localStorage.setItem('authToken', 'abc');
+			httpMock = TestBed.inject(HttpTestingController);
+			service = TestBed.inject(AuthService);
+		});
 
-		service.me().subscribe();
+		it('should logout correctly', () => {
+			service.logout();
 
-		const request: TestRequest = httpMock.expectOne('http://localhost:3000/api/auth/me');
+			expect(service.getToken()).toBe(null);
+			expect(service.getCurrentUser()).toBe(null);
+			expect(localStorage.getItem('authToken')).toBe(null);
+			expect(routerMock.navigate).toHaveBeenCalledWith(['/login']);
+		});
 
-		expect(request.request.method).toBe('GET');
+		it('should me correctly', () => {
+			service.me().subscribe();
 
-		request.flush({
-			id: '1',
-			username: 'john',
-			email: 'john@test.com',
+			const request: TestRequest = httpMock.expectOne('http://localhost:3000/api/auth/me');
+
+			expect(request.request.method).toBe('GET');
+
+			request.flush({
+				id: '1',
+				username: 'john',
+				email: 'john@test.com',
+			});
+		});
+
+		it('should set user on initializeAuth when token is valid', () => {
+			service.initializeAuth();
+
+			const request: TestRequest = httpMock.expectOne('http://localhost:3000/api/auth/me');
+
+			expect(request.request.method).toBe('GET');
+
+			request.flush({
+				id: '1',
+				username: 'john',
+				email: 'john@test.com',
+			});
+
+			expect(service.getCurrentUser()?.username).toBe('john');
 		});
 	});
 
-	it('should set user on initializeAuth', () => {
-		localStorage.setItem('authToken', 'abc');
+	describe('When token does not exists in local storage', () => {
+		beforeEach(() => {
+			vi.clearAllMocks();
 
-		service.initializeAuth();
+			localStorage.clear();
 
-		const request: TestRequest = httpMock.expectOne('http://localhost:3000/api/auth/me');
-
-		request.flush({
-			id: '1',
-			username: 'john',
-			email: 'john@test.com',
+			TestBed.resetTestingModule();
+			TestBed.configureTestingModule({
+				providers: [
+					provideHttpClient(),
+					provideHttpClientTesting(),
+					{ provide: Router, useValue: routerMock },
+				]
+			});
 		});
 
-		expect(service.getCurrentUser()?.username).toBe('john');
+		it('should NOT set user on initializeAuth when no token exists', () => {
+			service.initializeAuth();
+
+			httpMock.expectNone('http://localhost:3000/api/auth/me');
+
+			expect(service.getCurrentUser()).toBe(null);
+		});
 	});
 });
