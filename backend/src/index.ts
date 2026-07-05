@@ -7,7 +7,7 @@ import { loggerMiddleware } from './utils/middleware.js';
 
 dotenv.config();
 
-const app: express.Application = express();
+export const app: express.Application = express();
 
 app.use(loggerMiddleware);
 app.use(cors());
