@@ -42,16 +42,23 @@ export class AuthService {
 	private http: HttpClient = inject(HttpClient);
 	private router: Router = inject(Router);
 
-	private authToken = signal<string | null>(localStorage.getItem('authToken'));
+	private authToken = signal<string | null>(null);
 	private currentUser = signal<UserResponse | null>(null);
 
 	isLoggedIn = computed(() => !!this.authToken());
 	user = this.currentUser.asReadonly();
 
+	constructor() {
+		const token: string | null = localStorage.getItem('authToken');
+		this.authToken.set(token);
+	}
+
 	initializeAuth(): void {
-		if (!this.authToken()) return;
-		
-		// If it has a token, check to which user it connects to, and set currentUser, if token is expired log out
+		const token: string | null = this.authToken();
+
+		if (!token) return;
+
+		// If it has a token, check to which user it connects to, and set currentUser, and if token is expired log out
 		this.me().subscribe({
 			next: (user) => this.currentUser.set(user),
 			error: () => this.logout()
@@ -60,8 +67,7 @@ export class AuthService {
 
 	login(request: LoginRequest): Observable<LoginResponse> {
 		return this.http.post<LoginResponse>(`${API_URL}/auth/login`, request)
-			.pipe(tap((response: LoginResponse) => { this.setToken(response.token); }))
-			.pipe(tap((response: LoginResponse) => { this.currentUser.set(response.user); }));
+			.pipe(tap((response: LoginResponse) => { this.setSession(response.token, response.user); }))
 	}
 
 	register(request: RegisterRequest): Observable<RegisterResponse> {
@@ -80,8 +86,10 @@ export class AuthService {
 		this.router.navigate(['/login']);
 	}
 
-	private setToken(token: string): void {
+	private setSession(token: string, user: UserResponse) {
 		this.authToken.set(token);
+		this.currentUser.set(user);
+
 		localStorage.setItem('authToken', token);
 	}
 
