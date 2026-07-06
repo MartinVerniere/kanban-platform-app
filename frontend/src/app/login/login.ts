@@ -35,13 +35,13 @@ export class Login {
 		submit(this.loginForm, async () => {
 			this.authService.login(this.loginModel()).subscribe({
 				next: (response) => {
-					console.log('User logged in successfully:', response);
+					//console.log('User logged in successfully:', response);
 					this.resetForm();
 					this.error.set(null);
 					this.router.navigate(['/']);
 				},
 				error: (error) => {
-					console.error('Error logging in user:', error);
+					//console.error('Error logging in user:', error);
 					this.error.set(error.error.message);
 				}
 			});

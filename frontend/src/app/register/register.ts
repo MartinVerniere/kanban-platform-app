@@ -37,16 +37,16 @@ export class Register {
 		event.preventDefault();
 
 		submit(this.registerForm, async () => {
-			console.log('Registering user:', this.registerModel());
+			//console.log('Registering user:', this.registerModel());
 			this.authService.register(this.registerModel()).subscribe({
 				next: (response) => {
-					console.log('User registered successfully:', response);
+					//console.log('User registered successfully:', response);
 					this.resetForm();
 					this.error.set(null);
 					this.router.navigate(['/login']);
 				},
 				error: (error) => {
-					console.error('Error registering user:', error);
+					//console.error('Error registering user:', error);
 					this.error.set(error.error.message);
 				}
 			});
