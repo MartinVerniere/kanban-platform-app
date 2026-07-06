@@ -16,10 +16,6 @@ jobs:
     name: Frontend
     runs-on: ubuntu-latest
 
-    env:
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      PORT: 3000
-
     defaults:
       run:
         working-directory: frontend
@@ -49,6 +45,10 @@ jobs:
   test-and-build-backend:
     name: Backend
     runs-on: ubuntu-latest
+
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      PORT: 3000
 
     defaults:
       run:
