@@ -1,18 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { Health } from './services/health';
+import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth-service';
 
 @Component({
 	selector: 'app-root',
-	imports: [],
+	imports: [RouterOutlet],
 	templateUrl: './app.html',
-	styleUrl: './app.scss'
+	styleUrl: './app.css'
 })
 export class App {
-	private healthService = inject(Health);
+	private authService = inject(AuthService);
 
-	async onClick() {
-		console.log('Checking health status...');
-		const response = await this.healthService.getHealthStatus();
-		console.log('Health status:', response.status);
+	constructor(){
+		this.authService.initializeAuth();
 	}
 }
