@@ -4,6 +4,7 @@ import authRouter from './controllers/auth.js';
 import dotenv from 'dotenv';
 import { PORT } from './utils/config.js';
 import { loggerMiddleware } from './utils/middleware.js';
+import projectRouter from './controllers/project.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/projects', projectRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
