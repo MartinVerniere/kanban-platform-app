@@ -1,67 +1,9 @@
-import { Router, type NextFunction, type Request, type Response } from 'express';
-import { userExtractor } from '../utils/middleware.js';
+import { Router, type Request, type Response } from 'express';
+import { projectExtractor, requireProjectAdminRole, requireProjectMember, userExtractor } from '../utils/middleware.js';
 import { prisma } from '../prisma.js';
 import { ProjectRole } from '../generated/prisma/client.js';
 
 const projectRouter = Router();
-
-const projectExtractor = async (
-	request: Request,
-	response: Response,
-	next: NextFunction
-): Promise<void> => {
-	const requestProjectId = Number(request.params.id);
-	if (Number.isNaN(requestProjectId)) {
-		response.status(400).json({ message: 'Invalid project id' });
-		return;
-	}
-
-	const project = await prisma.project.findUnique({ where: { id: requestProjectId }, include: { members: true } });
-
-	if (!project) {
-		response.status(404).json({ message: 'Error: No project found with that id' });
-		return;
-	}
-
-	request.project = project;
-
-	next();
-};
-
-const requireProjectMember = async (
-	request: Request,
-	response: Response,
-	next: NextFunction
-): Promise<void> => {
-	const userId = request.user.id;
-	const project = request.project!;
-
-	const membership = project.members.find(member => member.userId === userId);
-
-	if (!membership) {
-		response.status(403).json({ message: 'Forbidden: User does not have access to this project' });
-		return;
-	}
-
-	request.projectMember = membership;
-
-	next();
-}
-
-const requireProjectAdminRole = async (
-	request: Request,
-	response: Response,
-	next: NextFunction
-): Promise<void> => {
-	const projectMember = request.projectMember!;
-
-	if (projectMember.role !== ProjectRole.ADMIN) {
-		response.status(403).json({ message: 'Forbidden: User does not own this project' });
-		return;
-	}
-
-	next();
-};
 
 projectRouter.get('/', userExtractor, async (request: Request, response: Response) => {
 	const userId = request.user.id;
