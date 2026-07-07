@@ -1,11 +1,11 @@
 import { Router, type Request, type Response } from 'express';
-import { projectExtractor, requireProjectAdminRole, requireProjectMember, userExtractor } from '../utils/middleware.js';
+import { projectExtractor, requireProjectAdminRole, requireProjectMember, tokenExtractor, userExtractor } from '../utils/middleware.js';
 import { prisma } from '../prisma.js';
 import { ProjectRole } from '../generated/prisma/client.js';
 
 const projectRouter = Router();
 
-projectRouter.get('/', userExtractor, async (request: Request, response: Response) => {
+projectRouter.get('/', tokenExtractor, userExtractor, async (request: Request, response: Response) => {
 	const userId = request.user.id;
 	const filteredProjects = await prisma.project.findMany({
 		where: {
@@ -20,13 +20,13 @@ projectRouter.get('/', userExtractor, async (request: Request, response: Respons
 	return response.status(200).json(filteredProjects);
 });
 
-projectRouter.get('/:id', userExtractor, projectExtractor, requireProjectMember, async (request: Request, response: Response) => {
+projectRouter.get('/:id', tokenExtractor, userExtractor, projectExtractor, requireProjectMember, async (request: Request, response: Response) => {
 	const project = request.project;
 
 	return response.status(200).json(project);
 })
 
-projectRouter.post('/', userExtractor, async (request: Request, response: Response) => {
+projectRouter.post('/', tokenExtractor, userExtractor, async (request: Request, response: Response) => {
 	const userId = request.user.id;
 	const { name, key, description } = request.body;
 
@@ -53,7 +53,7 @@ projectRouter.post('/', userExtractor, async (request: Request, response: Respon
 	return response.status(201).json(newProject);
 });
 
-projectRouter.put('/:id', userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
+projectRouter.put('/:id', tokenExtractor, userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
 	const { name, description } = request.body;
 	const project = request.project!;
 
@@ -72,7 +72,7 @@ projectRouter.put('/:id', userExtractor, projectExtractor, requireProjectMember,
 	return response.status(200).json(updatedProject);
 });
 
-projectRouter.delete('/:id', userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
+projectRouter.delete('/:id', tokenExtractor, userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
 	const project = request.project!;
 
 	await prisma.project.delete({ where: { id: project.id } })
