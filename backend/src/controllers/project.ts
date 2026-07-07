@@ -1,9 +1,67 @@
-import { Router, type Request, type Response } from 'express';
+import { Router, type NextFunction, type Request, type Response } from 'express';
 import { userExtractor } from '../utils/middleware.js';
 import { prisma } from '../prisma.js';
 import { ProjectRole } from '../generated/prisma/client.js';
 
 const projectRouter = Router();
+
+const projectExtractor = async (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const requestProjectId = Number(request.params.id);
+	if (Number.isNaN(requestProjectId)) {
+		response.status(400).json({ message: 'Invalid project id' });
+		return;
+	}
+
+	const project = await prisma.project.findUnique({ where: { id: requestProjectId }, include: { members: true } });
+
+	if (!project) {
+		response.status(404).json({ message: 'Error: No project found with that id' });
+		return;
+	}
+
+	request.project = project;
+
+	next();
+};
+
+const requireProjectMember = async (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const userId = request.user.id;
+	const project = request.project!;
+
+	const membership = project.members.find(member => member.userId === userId);
+
+	if (!membership) {
+		response.status(403).json({ message: 'Forbidden: User does not have access to this project' });
+		return;
+	}
+
+	request.projectMember = membership;
+
+	next();
+}
+
+const requireProjectAdminRole = async (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const projectMember = request.projectMember!;
+
+	if (projectMember.role !== ProjectRole.ADMIN) {
+		response.status(403).json({ message: 'Forbidden: User does not own this project' });
+		return;
+	}
+
+	next();
+};
 
 projectRouter.get('/', userExtractor, async (request: Request, response: Response) => {
 	const userId = request.user.id;
@@ -20,28 +78,8 @@ projectRouter.get('/', userExtractor, async (request: Request, response: Respons
 	return response.status(200).json(filteredProjects);
 });
 
-projectRouter.get('/:id', userExtractor, async (request: Request, response: Response) => {
-	const requestProjectId = Number(request.params.id);
-	if (Number.isNaN(requestProjectId)) {
-		response.status(400).json({ message: 'Invalid project id' });
-		return;
-	}
-
-	const userId = request.user.id;
-
-	const project = await prisma.project.findUnique({ where: { id: requestProjectId }, include: { members: true } });
-
-	if (!project) {
-		response.status(404).json({ message: 'Error: No project found with that id' });
-		return;
-	}
-
-	const isMemberOfProject = project.members.some(member => member.userId === userId);
-
-	if (!isMemberOfProject) {
-		response.status(403).json({ message: 'Unauthorized: User doesnt have access to this project' });
-		return;
-	}
+projectRouter.get('/:id', userExtractor, projectExtractor, requireProjectMember, async (request: Request, response: Response) => {
+	const project = request.project;
 
 	return response.status(200).json(project);
 })
@@ -73,29 +111,9 @@ projectRouter.post('/', userExtractor, async (request: Request, response: Respon
 	return response.status(201).json(newProject);
 });
 
-projectRouter.put('/:id', userExtractor, async (request: Request, response: Response) => {
-	const requestProjectId = Number(request.params.id);
-	if (Number.isNaN(requestProjectId)) {
-		response.status(400).json({ message: 'Invalid project id' });
-		return;
-	}
-
-	const userId = request.user.id;
+projectRouter.put('/:id', userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
 	const { name, description } = request.body;
-
-	const project = await prisma.project.findUnique({ where: { id: requestProjectId }, include: { members: true } });
-
-	if (!project) {
-		response.status(404).json({ message: 'Error: No project found with that id' });
-		return;
-	}
-
-	const isAdminOfProject = project.members.some(member => member.userId === userId && member.role === ProjectRole.ADMIN);
-
-	if (!isAdminOfProject) {
-		response.status(403).json({ message: 'Unauthorized: User doesnt have permission to edit this project' });
-		return;
-	}
+	const project = request.project!;
 
 	const updatedProject = await prisma.project.update({
 		where: {
@@ -112,30 +130,10 @@ projectRouter.put('/:id', userExtractor, async (request: Request, response: Resp
 	return response.status(200).json(updatedProject);
 });
 
-projectRouter.delete('/:id', userExtractor, async (request: Request, response: Response) => {
-	const requestProjectId = Number(request.params.id);
-	if (Number.isNaN(requestProjectId)) {
-		response.status(400).json({ message: 'Invalid project id' });
-		return;
-	}
+projectRouter.delete('/:id', userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
+	const project = request.project!;
 
-	const userId = request.user.id;
-
-	const project = await prisma.project.findUnique({ where: { id: requestProjectId }, include: { members: true } });
-
-	if (!project) {
-		response.status(404).json({ message: 'Error: No project found with that id' });
-		return;
-	}
-
-	const isAdminOfProject = project.members.some(member => member.userId === userId && member.role === ProjectRole.ADMIN);
-
-	if (!isAdminOfProject) {
-		response.status(403).json({ message: 'Unauthorized: User doesnt have permission to delete this project' });
-		return;
-	}
-
-	await prisma.project.delete({ where: { id: requestProjectId } })
+	await prisma.project.delete({ where: { id: project.id } })
 
 	return response.status(200).json({ message: 'Project deleted' });
 });
