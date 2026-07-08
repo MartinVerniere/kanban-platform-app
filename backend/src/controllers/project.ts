@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { projectExtractor, requireProjectAdminRole, requireProjectMember, tokenExtractor, userExtractor } from '../utils/middleware.js';
 import { prisma } from '../prisma.js';
-import { ProjectRole } from '../generated/prisma/client.js';
+import { ProjectRole, type Project } from '../generated/prisma/client.js';
 
 const projectRouter = Router();
 
@@ -29,6 +29,9 @@ projectRouter.get('/:id', tokenExtractor, userExtractor, projectExtractor, requi
 projectRouter.post('/', tokenExtractor, userExtractor, async (request: Request, response: Response) => {
 	const userId = request.user.id;
 	const { name, key, description } = request.body;
+
+	const projectKeyExists: Project | null = await prisma.project.findUnique({ where: { key } });
+	if (projectKeyExists) return response.status(400).json({ message: 'An existing project already uses that key' });
 
 	const newProject = await prisma.$transaction(async (tx) => {
 		const project = await tx.project.create({
