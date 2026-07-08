@@ -5,7 +5,7 @@ import request from 'supertest';
 
 import { prisma } from '../prisma.js';
 import { SECRET } from '../utils/config.js';
-import { app } from '../index.js';
+import { app } from '../app.js';
 
 vi.mock('../prisma.js', () => ({
 	prisma: {
