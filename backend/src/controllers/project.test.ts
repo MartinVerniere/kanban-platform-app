@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 
 import { prisma } from '../prisma.js';
-import { app } from '../index.js';
+import { app } from '../app.js';
 import { ProjectRole } from '../generated/prisma/client.js';
 
 describe('Project API', () => {
