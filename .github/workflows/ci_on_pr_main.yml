@@ -48,6 +48,8 @@ jobs:
 
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      NODE_ENV: test
       PORT: 3000
 
     defaults:
@@ -70,11 +72,14 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Lint
-        run: npm run lint --if-present
-
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        
       - name: Run tests
         run: npm test
+
+      - name: Lint
+        run: npm run lint --if-present
 
       - name: Build
         run: npm run build
