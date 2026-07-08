@@ -1,3 +1,5 @@
+import './utils/config.js';
+
 import { app } from './app.js';
 import { PORT } from './utils/config.js';
 
