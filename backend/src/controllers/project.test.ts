@@ -393,7 +393,7 @@ describe('Project API', () => {
 							.delete(`/api/projects/${firstProjectId}`);
 
 						expect(response.status).toBe(401);
-						expect(response.body.error).toBe('token invalid');
+						expect(response.body.error).toBe('token missing');
 					});
 				});
 
