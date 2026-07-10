@@ -1,14 +1,7 @@
-<div class="project-element">
-	<h2 class="project-name">{{project().name}}</h2>
-	<div class="project-key">{{project().key}}</div>
-	<div class="project-description">{{project().key}}</div>
-	<div class="project-members-list">
-		@for (member of project().members; track member) {
-			<div class="project-member">
-				<div class="project-member-id">{{member().id}}</div>
-				<div class="project-member-role">{{member().role}}</div>
-				<div class="project-member-name">{{member().name}}</div>
-			</div>
-		}
-	</div>
-</div>
+<a class="project-element" [routerLink]="['/projects', project().id]">
+	<h3 class="project-name">{{project().name}}</h3>
+	<div class="project-key">Key: {{project().key}}</div>
+	@if (project().description) {
+		<div class="project-description">Description: {{project().description}}</div>
+	}
+</a>
