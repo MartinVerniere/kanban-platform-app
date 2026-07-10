@@ -1,0 +1,14 @@
+<div class="project-list">
+	<h2 class="project-list-title">Projects</h2>
+
+	<div class="project-list-items">
+		@for (project of projectList(); track project) {
+		<app-project-element [project]="project">
+		</app-project-element>
+		} @empty {
+		<div class="project-list-empty">
+			No project yet.
+		</div>
+		}
+	</div>
+</div>
