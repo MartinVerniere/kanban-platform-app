@@ -4,6 +4,7 @@ import cors from 'cors';
 import authRouter from './controllers/auth.js';
 import { loggerMiddleware } from './utils/middleware.js';
 import projectRouter from './controllers/project.js';
+import userRouter from './controllers/user.js';
 
 export const app = express();
 
@@ -16,4 +17,5 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRouter);
-app.use('/api/projects', projectRouter)
+app.use('/api/users', userRouter);
+app.use('/api/projects', projectRouter);
