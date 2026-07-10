@@ -1,0 +1,24 @@
+<div class="project-element">
+	@if (project.isLoading()) {
+	<div class="loading">Loading...</div>
+	} @else if (project.error()) {
+	<div class="error">Error loading project</div>
+	} @else {
+	<h2 class="project-name">Name: {{project.value()?.name}}</h2>
+	<div class="project-key">Key: {{project.value()?.key}}</div>
+	@if (project.value()?.description) {
+	<div class="project-description">Description: {{project.value()?.description}}</div>
+	}
+	<div class="project-members-list">
+		Members
+		@for (member of project.value()?.members; track member) {
+		<div class="project-member">
+			<div class="project-member-id">Id: {{member.id}}</div>
+			<div class="project-member-role">Role: {{member.role}}</div>
+			<div class="project-member-name">Name: {{member.user.username}}</div>
+		</div>
+		}
+	</div>
+	}
+	<button routerLink="/projects">Go back</button>
+</div>
