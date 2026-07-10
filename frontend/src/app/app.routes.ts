@@ -26,11 +26,11 @@ export const routes: Routes = [
 		component: ProjectList
 	},
 	{
-		path: 'projects/:id',
-		component: ProjectDetails
-	},
-	{
 		path: 'projects/create',
 		component: ProjectForm
+	},
+	{
+		path: 'projects/:id',
+		component: ProjectDetails
 	}
 ];
