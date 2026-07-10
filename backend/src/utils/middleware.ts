@@ -76,12 +76,27 @@ export const projectExtractor = async (
 	next: NextFunction
 ): Promise<void> => {
 	const requestProjectId = Number(request.params.id);
-	if (Number.isNaN(requestProjectId)) {
+	if (!Number.isInteger(requestProjectId)) {
 		response.status(400).json({ message: 'Invalid project id' });
 		return;
 	}
 
-	const project = await prisma.project.findUnique({ where: { id: requestProjectId }, include: { members: true } });
+	const project = await prisma.project.findUnique({
+		where: { id: requestProjectId },
+		include: {
+			members: {
+				include: {
+					user: {
+						select: {
+							id: true,
+							username: true,
+							email: true
+						}
+					}
+				}
+			}
+		}
+	});
 
 	if (!project) {
 		response.status(404).json({ message: 'Error: No project found with that id' });
