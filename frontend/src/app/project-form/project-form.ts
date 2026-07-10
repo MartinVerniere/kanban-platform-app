@@ -1,11 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ProjectsService } from '../services/projects-service';
 
 export interface ProjectModel {
 	name: string;
 	key: string;
-	description: string | null;
+	description: string;
 }
 
 @Component({
@@ -14,7 +15,11 @@ export interface ProjectModel {
 	templateUrl: './project-form.html',
 	styleUrl: './project-form.css',
 })
+
 export class ProjectForm {
+	router = inject(Router);
+	projectService = inject(ProjectsService);
+	
 	projectModel = signal<ProjectModel>({
 		name: '',
 		key: '',
@@ -31,6 +36,17 @@ export class ProjectForm {
 		event.preventDefault();
 
 		submit(this.projectForm, async () => {
+			this.projectService.createProject(this.projectModel()).subscribe({
+				next: () => {
+					this.resetForm();
+					this.error.set(null);
+					this.router.navigate(['/projects']);
+				},
+				error: (error) => {
+					this.error.set(error.error.message);
+				}
+			});
+
 		});
 	}
 

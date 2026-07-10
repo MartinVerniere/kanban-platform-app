@@ -4,7 +4,7 @@
 			<label class="form-label" for="name"> Name </label>
 			<input id="name" class="form-input" type="text" placeholder="Project A" [formField]="projectForm.name" />
 
-			@(projectForm.name().invalid() && projectForm.name().touched()){
+			@if(projectForm.name().invalid() && projectForm.name().touched()){
 			<div class="error">
 				@for (error of projectForm.name().errors(); track error.kind){
 				<span> {{error.message}}</span>
@@ -16,7 +16,7 @@
 			<label class="form-label" for="key"> Key </label>
 			<input id="key" class="form-input" type="text" placeholder="PRO" [formField]="projectForm.key" />
 
-			@(projectForm.key().invalid() && projectForm.key().touched()){
+			@if(projectForm.key().invalid() && projectForm.key().touched()){
 			<div class="error">
 				@for (error of projectForm.key().errors(); track error.kind){
 				<span> {{error.message}}</span>
@@ -29,7 +29,7 @@
 			<input id="description" class="form-input" type="text" placeholder="Project description"
 				[formField]="projectForm.description" />
 
-			@(projectForm.description().invalid() && projectForm.description().touched()){
+			@if(projectForm.description().invalid() && projectForm.description().touched()){
 			<div class="error">
 				@for (error of projectForm.description().errors(); track error.kind){
 				<span> {{error.message}}</span>
