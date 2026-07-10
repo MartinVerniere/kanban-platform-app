@@ -17,6 +17,15 @@
 			<div class="project-member-role">Role: {{member.role}}</div>
 			<div class="project-member-name">Name: {{member.user.username}}</div>
 		</div>
+		} @empty {
+			<div class="project-member-empty">No members in this project (Possible error)</div>
+		}
+		<button (click)="">Add member</button>
+		@if (addMemberFormEnabled) {
+			<div class="member-form">
+				<app-member-form [projectId]="project.value()?.id"></app-member-form>
+				<button (click)="onCancelAddMember()">Cancel</button>
+			</div>
 		}
 	</div>
 	}

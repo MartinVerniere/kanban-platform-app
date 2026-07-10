@@ -2,10 +2,11 @@ import { Component, inject, resource } from '@angular/core';
 import { ProjectsService } from '../services/projects-service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { MemberForm } from '../member-form/member-form';
 
 @Component({
 	selector: 'app-project-details',
-	imports: [RouterLink],
+	imports: [RouterLink, MemberForm],
 	templateUrl: './project-details.html',
 	styleUrl: './project-details.css',
 })
