@@ -3,6 +3,7 @@ import { form, FormField, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { Project, ProjectsService } from '../services/projects-service';
 import { firstValueFrom } from 'rxjs';
+import { UsersService } from '../services/users-service';
 
 export interface MemberModel {
 	userId: string;
@@ -18,11 +19,12 @@ export interface MemberModel {
 export class MemberForm {
 	router = inject(Router);
 	projectService = inject(ProjectsService);
+	userService = inject(UsersService);
 
 	project = input.required<Project>();
 	memberAdded = output<void>();
 
-	users = resource({ loader: () => firstValueFrom(this.projectService.getUsers()) });
+	users = resource({ loader: () => firstValueFrom(this.userService.getUsers()) });
 
 	possibleUsers = computed(() => {
 		const users = this.users.value();
