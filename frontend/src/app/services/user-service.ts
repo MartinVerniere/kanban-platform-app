@@ -11,7 +11,7 @@ export interface User {
 }
 
 @Service()
-export class UsersService {
+export class UserService {
 	private http = inject(HttpClient);
 
 	getUsers(): Observable<User[]> {

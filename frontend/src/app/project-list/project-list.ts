@@ -1,8 +1,8 @@
 import { Component, inject, resource } from '@angular/core';
-import { Project, ProjectsService } from '../services/projects-service';
 import { ProjectElement } from '../project-element/project-element';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { ProjectService } from '../services/project-service';
 
 @Component({
 	selector: 'app-project-list',
@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
 })
 
 export class ProjectList {
-	projectService = inject(ProjectsService);
+	projectService = inject(ProjectService);
 
 	projectList = resource({ loader: () => firstValueFrom(this.projectService.getProjects()) });
 

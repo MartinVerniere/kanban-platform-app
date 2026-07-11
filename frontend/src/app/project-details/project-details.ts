@@ -1,8 +1,8 @@
 import { Component, inject, resource } from '@angular/core';
-import { ProjectsService } from '../services/projects-service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { MemberForm } from '../member-form/member-form';
+import { ProjectService } from '../services/project-service';
 
 @Component({
 	selector: 'app-project-details',
@@ -13,7 +13,7 @@ import { MemberForm } from '../member-form/member-form';
 
 export class ProjectDetails {
 	route = inject(ActivatedRoute);
-	projectService = inject(ProjectsService);
+	projectService = inject(ProjectService);
 
 	addMemberFormEnabled = false;
 

@@ -1,9 +1,9 @@
 import { Component, computed, inject, input, output, resource, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
-import { Project, ProjectsService } from '../services/projects-service';
 import { firstValueFrom } from 'rxjs';
-import { UsersService } from '../services/users-service';
+import { Project, ProjectService } from '../services/project-service';
+import { UserService } from '../services/user-service';
 
 export interface MemberModel {
 	userId: string;
@@ -18,8 +18,8 @@ export interface MemberModel {
 
 export class MemberForm {
 	router = inject(Router);
-	projectService = inject(ProjectsService);
-	userService = inject(UsersService);
+	projectService = inject(ProjectService);
+	userService = inject(UserService);
 
 	project = input.required<Project>();
 	memberAdded = output<void>();

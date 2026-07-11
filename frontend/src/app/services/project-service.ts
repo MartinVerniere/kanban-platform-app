@@ -25,7 +25,7 @@ export interface ProjectMember {
 }
 
 @Service()
-export class ProjectsService {
+export class ProjectService {
 	private http = inject(HttpClient);
 
 	getProjects(): Observable<Project[]> {

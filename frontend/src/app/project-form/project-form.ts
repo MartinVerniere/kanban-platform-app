@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { ProjectsService } from '../services/projects-service';
+import { ProjectService } from '../services/project-service';
 
 export interface ProjectModel {
 	name: string;
@@ -18,7 +18,7 @@ export interface ProjectModel {
 
 export class ProjectForm {
 	router = inject(Router);
-	projectService = inject(ProjectsService);
+	projectService = inject(ProjectService);
 	
 	projectModel = signal<ProjectModel>({
 		name: '',
