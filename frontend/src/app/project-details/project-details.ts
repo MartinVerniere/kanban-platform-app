@@ -15,7 +15,12 @@ export class ProjectDetails {
 	route = inject(ActivatedRoute);
 	projectService = inject(ProjectsService);
 
+	addMemberFormEnabled = false;
+
 	projectId = Number(this.route.snapshot.paramMap.get("id")!);
 
 	project = resource({ loader: () => firstValueFrom(this.projectService.getProject(this.projectId)) });
+
+	onEnableAddMember() { this.addMemberFormEnabled = true; }
+	onCancelAddMember() { this.addMemberFormEnabled = false; }
 }

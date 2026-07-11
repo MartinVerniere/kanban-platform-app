@@ -24,6 +24,12 @@ export interface ProjectMember {
 	};
 }
 
+export interface User {
+	id: number;
+	username: string;
+	email: string;
+}
+
 @Service()
 export class ProjectsService {
 	private http = inject(HttpClient);
@@ -44,7 +50,15 @@ export class ProjectsService {
 
 	deleteProject(id: number): void { }
 
-	addMember(projectId: number, userId: number): void { }
+	getUsers(): Observable<User[]> {
+		return this.http.get<User[]>(`${API_URL}/users`);
+	}
 
-	removeMember(projectId: number, userId: number): void { }
+	addMember(projectId: number, userId: number): Observable<User> {
+		return this.http.post<User>(`${API_URL}/projects/${projectId}/members`, { userId: userId });
+	}
+
+	removeMember(projectId: number, userId: number): Observable<User> {
+		return this.http.delete<User>(`${API_URL}/projects/${projectId}/members/${userId}`);
+	 }
 }
