@@ -13,9 +13,10 @@
 		Members
 		@for (member of project.value()?.members; track member) {
 		<div class="project-member">
-			<div class="project-member-id">Id: {{member.id}}</div>
+			<div class="project-member-id">Id: {{member.user.id}}</div>
 			<div class="project-member-role">Role: {{member.role}}</div>
 			<div class="project-member-name">Name: {{member.user.username}}</div>
+			<button (click)="onRemoveMember($event, member.user.id)">Remove from project</button>
 		</div>
 		} @empty {
 			<div class="project-member-empty">No members in this project (Possible error)</div>

@@ -23,4 +23,10 @@ export class ProjectDetails {
 
 	onEnableAddMember() { this.addMemberFormEnabled = true; }
 	onCancelAddMember() { this.addMemberFormEnabled = false; }
+
+	onRemoveMember(event: Event, userId: number) {
+		event.preventDefault();
+
+		firstValueFrom(this.projectService.removeMember(this.projectId, userId));
+	}
 }
