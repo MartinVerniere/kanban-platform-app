@@ -1,0 +1,67 @@
+import { Component, computed, inject, input, resource, signal } from '@angular/core';
+import { form, FormField, required, submit } from '@angular/forms/signals';
+import { Router } from '@angular/router';
+import { Project, ProjectsService } from '../services/projects-service';
+import { firstValueFrom } from 'rxjs';
+
+export interface MemberModel {
+	userId: string;
+}
+
+@Component({
+	selector: 'app-member-form',
+	imports: [FormField],
+	templateUrl: './member-form.html',
+	styleUrl: './member-form.css',
+})
+
+export class MemberForm {
+	router = inject(Router);
+	projectService = inject(ProjectsService);
+
+	project = input.required<Project>();
+
+	users = resource({ loader: () => firstValueFrom(this.projectService.getUsers()) });
+
+	possibleUsers = computed(() => {
+		const users = this.users.value();
+		return users
+			? users.filter(user => !(this.project().members.map(member => member.id).includes(user.id)))
+			: [];
+	});
+
+	memberModel = signal<MemberModel>({
+		userId: ''
+	});
+	error = signal<string | null>(null);
+
+	memberForm = form(this.memberModel, (fieldPath) => {
+		required(fieldPath.userId, { message: 'User is required' });
+	});
+
+	async onSubmit(event: Event) {
+		event.preventDefault();
+
+		submit(this.memberForm, async () => {
+			if (this.memberModel().userId === '') return;
+
+			const userId = Number(this.memberModel().userId);
+			this.projectService.addMember(this.project().id, userId).subscribe({
+				next: () => {
+					this.resetForm();
+					this.error.set(null);
+					this.router.navigate(['/projects']);
+				},
+				error: (error) => {
+					this.error.set(error.error.message);
+				}
+			});
+
+		});
+	}
+
+	resetForm() {
+		this.memberModel.set({ userId: '' });
+		this.memberForm().reset();
+	}
+}
