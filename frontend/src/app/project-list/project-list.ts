@@ -1,7 +1,7 @@
 import { Component, inject, resource } from '@angular/core';
-import { ProjectsService } from '../services/projects-service';
+import { Project, ProjectsService } from '../services/projects-service';
 import { ProjectElement } from '../project-element/project-element';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -15,4 +15,11 @@ export class ProjectList {
 	projectService = inject(ProjectsService);
 
 	projectList = resource({ loader: () => firstValueFrom(this.projectService.getProjects()) });
+
+	onDeleteProject(event: Event, projectId: number): void {
+		event.preventDefault();
+
+		firstValueFrom(this.projectService.deleteProject(projectId));
+		this.projectList.reload();
+	}
 }

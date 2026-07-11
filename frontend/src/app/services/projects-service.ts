@@ -48,7 +48,9 @@ export class ProjectsService {
 
 	updateProject(id: number, project: Project): void { }
 
-	deleteProject(id: number): void { }
+	deleteProject(id: number): Observable<Project> {
+		return this.http.delete<Project>(`${API_URL}/projects/${id}`,)
+	}
 
 	getUsers(): Observable<User[]> {
 		return this.http.get<User[]>(`${API_URL}/users`);
@@ -60,5 +62,5 @@ export class ProjectsService {
 
 	removeMember(projectId: number, userId: number): Observable<User> {
 		return this.http.delete<User>(`${API_URL}/projects/${projectId}/members/${userId}`);
-	 }
+	}
 }

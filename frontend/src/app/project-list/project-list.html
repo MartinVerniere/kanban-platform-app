@@ -8,8 +8,11 @@
 	  } @else {
 		<div class="project-list-items">
 			@for (project of projectList.value(); track project.id) {
-			<app-project-element [project]="project">
-			</app-project-element>
+				<div class="project-list">
+					<app-project-element [project]="project">
+					</app-project-element>
+					<button (click)="onDeleteProject($event, project.id)">Delete project</button>
+				</div>
 			} @empty {
 			<div class="project-list-empty">
 				No project yet.
