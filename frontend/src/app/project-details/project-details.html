@@ -20,10 +20,10 @@
 		} @empty {
 			<div class="project-member-empty">No members in this project (Possible error)</div>
 		}
-		<button (click)="">Add member</button>
-		@if (addMemberFormEnabled) {
+		<button (click)="onEnableAddMember()">Add member</button>
+		@if (project.hasValue() && addMemberFormEnabled) {
 			<div class="member-form">
-				<app-member-form [projectId]="project.value()?.id"></app-member-form>
+				<app-member-form [project]="project.value()"></app-member-form>
 				<button (click)="onCancelAddMember()">Cancel</button>
 			</div>
 		}
