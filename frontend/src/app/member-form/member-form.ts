@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, resource, signal } from '@angular/core';
+import { Component, computed, inject, input, output, resource, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { Project, ProjectsService } from '../services/projects-service';
@@ -20,6 +20,7 @@ export class MemberForm {
 	projectService = inject(ProjectsService);
 
 	project = input.required<Project>();
+	memberAdded = output<void>();
 
 	users = resource({ loader: () => firstValueFrom(this.projectService.getUsers()) });
 
@@ -50,7 +51,7 @@ export class MemberForm {
 				next: () => {
 					this.resetForm();
 					this.error.set(null);
-					this.router.navigate(['/projects']);
+					this.memberAdded.emit();
 				},
 				error: (error) => {
 					this.error.set(error.error.message);

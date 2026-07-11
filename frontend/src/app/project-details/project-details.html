@@ -24,7 +24,7 @@
 		<button (click)="onEnableAddMember()">Add member</button>
 		@if (project.hasValue() && addMemberFormEnabled) {
 			<div class="member-form">
-				<app-member-form [project]="project.value()"></app-member-form>
+				<app-member-form [project]="project.value()" (memberAdded)="onMemberAdded()"></app-member-form>
 				<button (click)="onCancelAddMember()">Cancel</button>
 			</div>
 		}

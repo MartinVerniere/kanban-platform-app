@@ -24,9 +24,15 @@ export class ProjectDetails {
 	onEnableAddMember() { this.addMemberFormEnabled = true; }
 	onCancelAddMember() { this.addMemberFormEnabled = false; }
 
-	onRemoveMember(event: Event, userId: number) {
+	async onMemberAdded() {
+		this.project.reload();
+		this.addMemberFormEnabled = false;
+	}
+
+	async onRemoveMember(event: Event, userId: number) {
 		event.preventDefault();
 
-		firstValueFrom(this.projectService.removeMember(this.projectId, userId));
+		await firstValueFrom(this.projectService.removeMember(this.projectId, userId));
+		this.project.reload();
 	}
 }
