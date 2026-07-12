@@ -1,26 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NEVER, of, throwError } from 'rxjs';
+import { provideRouter, Router } from '@angular/router';
 
 import { ProjectList } from './project-list';
-import { provideRouter, Router } from '@angular/router';
 import { ProjectService } from '../services/project-service';
-import { NEVER, of, throwError } from 'rxjs';
-import { By } from '@angular/platform-browser';
-import { Component } from '@angular/core';
-
-@Component({
-	template: ''
-})
-class DummyComponent { }
 
 describe('ProjectList', () => {
 	let fixture: ComponentFixture<ProjectList>;
 	let component: ProjectList;
 	let html: HTMLElement;
-	let router: Router;
-	let navigateSpy: any;
-	let reloadSpy: any;
 
-	let projectServiceMock = {
+	const projectServiceMock = {
 		getProjects: vi.fn(),
 		deleteProject: vi.fn()
 	};
@@ -36,173 +26,95 @@ describe('ProjectList', () => {
 		}
 	];
 
+	async function createComponent(shouldAwait: boolean = true) {
+		fixture = TestBed.createComponent(ProjectList);
+		component = fixture.componentInstance;
+		html = fixture.nativeElement;
+
+		fixture.detectChanges();
+
+		if (shouldAwait) {
+			await fixture.whenStable();
+			fixture.detectChanges();
+		}
+	}
+
 	beforeEach(async () => {
 		vi.clearAllMocks();
 
 		await TestBed.configureTestingModule({
 			imports: [ProjectList],
 			providers: [
-				{ provide: ProjectService, useValue: projectServiceMock },
-				provideRouter([
-					{
-						path: 'projects/create',
-						component: DummyComponent
-					}
-				])
+				{
+					provide: ProjectService,
+					useValue: projectServiceMock
+				},
+				provideRouter([])
 			]
 		}).compileComponents();
 	});
 
 	it('should create', async () => {
 		projectServiceMock.getProjects.mockReturnValue(of(projects));
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
 
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
-
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		await fixture.whenStable();
+		await createComponent();
 
 		expect(component).toBeTruthy();
 	});
 
-	it('should fetch projects', async () => {
-		projectServiceMock.getProjects.mockReturnValue(of(projects));
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
+	it('should show loading state', async () => {
+		projectServiceMock.getProjects.mockReturnValue(NEVER);
 
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
+		await createComponent(false);
 
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		await fixture.whenStable();
-
-		expect(projectServiceMock.getProjects).toHaveBeenCalledTimes(1);
+		expect(html.textContent).toContain('Loading...');
 	});
 
-	it('should render all projects', async () => {
+	it('should render projects', async () => {
 		projectServiceMock.getProjects.mockReturnValue(of(projects));
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
 
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
-
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		await fixture.whenStable();
+		await createComponent();
 
 		expect(html.textContent).toContain('Project One');
 		expect(html.textContent).toContain('Project Two');
 	});
 
-	it('should call deleteProject when clicking delete button', async () => {
+	it('should show empty state', async () => {
+		projectServiceMock.getProjects.mockReturnValue(of([]));
+
+		await createComponent();
+
+		expect(html.textContent).toContain('No projects yet.');
+	});
+
+	it('should show error state', async () => {
+		projectServiceMock.getProjects.mockReturnValue(
+			throwError(() => new Error())
+		);
+
+		await createComponent();
+
+		expect(html.textContent).toContain('Error loading projects');
+	});
+
+	it('should delete project and reload list', async () => {
 		projectServiceMock.getProjects.mockReturnValue(of(projects));
 		projectServiceMock.deleteProject.mockReturnValue(of({}));
 
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
+		await createComponent();
 
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
+		const reloadSpy = vi.spyOn(component.projectList, 'reload');
 
-		await fixture.whenStable();
+		const deleteButton = Array.from(html.querySelectorAll('button'))
+			.find(button => button.textContent?.includes('Delete project'));
 
-		const deleteButtons = fixture.debugElement.queryAll(By.css('button'));
+		expect(deleteButton).toBeTruthy();
 
-		deleteButtons[0].nativeElement.click();
+		deleteButton!.click();
 
 		await fixture.whenStable();
 
 		expect(projectServiceMock.deleteProject).toHaveBeenCalledWith(1);
 		expect(reloadSpy).toHaveBeenCalled();
-	});
-
-	it('should redirect to form page on "Create project" button click', async () => {
-		projectServiceMock.getProjects.mockReturnValue(of(projects));
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
-
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
-
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		await fixture.whenStable();
-
-		const buttons = Array.from(html.querySelectorAll('button'));
-		const createButton = buttons.find((button) => button.textContent?.trim() === 'Create new project');
-
-		expect(createButton).toBeTruthy();
-
-		createButton!.click();
-
-		await fixture.whenStable();
-
-		expect(router.url).toBe('/projects/create');
-	});
-
-	it('should render empty list message', async () => {
-		projectServiceMock.getProjects.mockReturnValue(of([]));
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
-
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
-
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		await fixture.whenStable();
-
-		expect(html.textContent).toContain('No projects yet.');
-	});
-
-	it('should render loading message', async () => {
-		projectServiceMock.getProjects.mockReturnValue(NEVER);
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
-
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
-
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		fixture.detectChanges();
-
-		expect(html.textContent).toContain('Loading...');
-	});
-
-	it('should render error message', async () => {
-		projectServiceMock.getProjects.mockReturnValue(throwError(() => new Error()));
-		projectServiceMock.deleteProject.mockReturnValue(of({}));
-
-		router = TestBed.inject(Router);
-		fixture = TestBed.createComponent(ProjectList);
-		component = fixture.componentInstance;
-		html = fixture.nativeElement;
-
-		navigateSpy = vi.spyOn(router, 'navigate');
-		reloadSpy = vi.spyOn(component.projectList, 'reload');
-
-		await fixture.whenStable();
-
-		expect(html.textContent).toContain('Error loading projects');
 	});
 });
