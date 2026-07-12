@@ -16,10 +16,10 @@ export class ProjectList {
 
 	projectList = resource({ loader: () => firstValueFrom(this.projectService.getProjects()) });
 
-	onDeleteProject(event: Event, projectId: number): void {
+	async onDeleteProject(event: Event, projectId: number): Promise<void> {
 		event.preventDefault();
 
-		firstValueFrom(this.projectService.deleteProject(projectId));
+		await firstValueFrom(this.projectService.deleteProject(projectId));
 		this.projectList.reload();
 	}
 }
