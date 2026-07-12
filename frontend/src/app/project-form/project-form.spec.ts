@@ -8,14 +8,12 @@ import { of } from 'rxjs';
 describe('ProjectForm', () => {
 	let fixture: ComponentFixture<ProjectForm>;
 	let component: ProjectForm;
-	let html: HTMLElement;
 
 	let projectServiceMock: { createProject: ReturnType<typeof vi.fn> }
 
 	async function createComponent(shouldAwait: boolean = true) {
 		fixture = TestBed.createComponent(ProjectForm);
 		component = fixture.componentInstance;
-		html = fixture.nativeElement;
 
 		fixture.detectChanges();
 
@@ -67,9 +65,7 @@ describe('ProjectForm', () => {
 	it('should not create project when invalid form data', async () => {
 		await createComponent();
 
-		const form = html.querySelector('form')!;
-
-		form.dispatchEvent(new Event('submit'));
+		await component.onSubmit(new Event('submit'));
 
 		await fixture.whenStable();
 
