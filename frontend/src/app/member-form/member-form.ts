@@ -23,13 +23,14 @@ export class MemberForm {
 
 	project = input.required<Project>();
 	memberAdded = output<void>();
+	canceledMemberAdd = output<void>();
 
 	users = resource({ loader: () => firstValueFrom(this.userService.getUsers()) });
 
 	possibleUsers = computed(() => {
 		const users = this.users.value();
 		return users
-			? users.filter(user => !(this.project().members.map(member => member.id).includes(user.id)))
+			? users.filter(user => !(this.project().members.map(member => member.user.id).includes(user.id)))
 			: [];
 	});
 
@@ -62,6 +63,8 @@ export class MemberForm {
 
 		});
 	}
+
+	onCancel() { this.canceledMemberAdd.emit(); }
 
 	resetForm() {
 		this.memberModel.set({ userId: '' });

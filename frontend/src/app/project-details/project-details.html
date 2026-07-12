@@ -19,14 +19,13 @@
 			<button (click)="onRemoveMember($event, member.user.id)">Remove from project</button>
 		</div>
 		} @empty {
-			<div class="project-member-empty">No members in this project (Possible error)</div>
+		<div class="project-member-empty">No members in this project (Possible error)</div>
 		}
-		<button (click)="onEnableAddMember()">Add member</button>
 		@if (project.hasValue() && addMemberFormEnabled) {
-			<div class="member-form">
-				<app-member-form [project]="project.value()" (memberAdded)="onMemberAdded()"></app-member-form>
-				<button (click)="onCancelAddMember()">Cancel</button>
-			</div>
+		<app-member-form [project]="project.value()" (memberAdded)="onMemberAdded()"
+			(canceledMemberAdd)="onCancelAddMember()"></app-member-form>
+		} @else {
+		<button (click)="onEnableAddMember()">Add member</button>
 		}
 	</div>
 	}
