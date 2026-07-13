@@ -4,13 +4,11 @@ import request from 'supertest';
 import { prisma } from '../prisma.js';
 import { app } from '../app.js';
 import { ProjectRole } from '../generated/prisma/client.js';
+import { clearDatabase } from '../helpers/database.js';
 
 describe('Project API', () => {
 	beforeEach(async () => {
-		//Clear database
-		await prisma.projectMember.deleteMany();
-		await prisma.project.deleteMany();
-		await prisma.user.deleteMany();
+		await clearDatabase();
 	});
 
 	describe('when users exists in database', () => {

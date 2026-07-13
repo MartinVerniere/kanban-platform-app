@@ -5,11 +5,11 @@ import request from 'supertest';
 import { prisma } from '../prisma.js';
 import { SECRET } from '../utils/config.js';
 import { app } from '../app.js';
+import { clearDatabase } from '../helpers/database.js';
 
 describe('Auth API', () => {
 	beforeEach(async () => {
-		//Clear database
-		await prisma.user.deleteMany();
+		await clearDatabase();
 	});
 
 	it('returns 400 when username is missing', async () => {
