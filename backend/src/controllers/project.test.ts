@@ -105,7 +105,7 @@ describe('Project API', () => {
 						});
 
 					expect(response.status).toBe(401);
-					expect(response.body.error).toBe('token missing');
+					expect(response.body.error.message).toBe('Authentication token is missing.');
 				});
 			});
 
@@ -152,7 +152,7 @@ describe('Project API', () => {
 							.get('/api/projects');
 
 						expect(response.status).toBe(401);
-						expect(response.body.error).toBe('token missing');
+						expect(response.body.error.message).toBe('Authentication token is missing.');
 					});
 				});
 
@@ -172,7 +172,7 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(400);
-						expect(response.body.message).toBe('Invalid project id');
+						expect(response.body.error.message).toBe('Invalid project id.');
 					});
 
 					it('returns 404 when the project does not exist', async () => {
@@ -181,7 +181,7 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(404);
-						expect(response.body.message).toBe('Error: No project found with that id');
+						expect(response.body.error.message).toBe('Project not found.');
 					});
 
 					it('returns 403 when the user is not a member', async () => {
@@ -199,12 +199,12 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(403);
-						expect(response.body.message).toBe('Forbidden: User does not have access to this project');
+						expect(response.body.error.message).toBe('You do not have access to this project.');
 					});
 				});
 
 				describe('on create project', () => {
-					it('returns 400 when new project key already exists in database', async () => {
+					it('returns 409 when new project key already exists in database', async () => {
 						const response = await request(app)
 							.post(`/api/projects`)
 							.set('Authorization', `Bearer ${authToken}`)
@@ -214,8 +214,8 @@ describe('Project API', () => {
 								description: 'test desc'
 							});
 
-						expect(response.status).toBe(400);
-						expect(response.body.message).toBe('An existing project already uses that key');
+						expect(response.status).toBe(409);
+						expect(response.body.error.message).toBe('A project with this key already exists.');
 					});
 				});
 
@@ -237,7 +237,7 @@ describe('Project API', () => {
 							.send({ userId: aliceUserId })
 
 						expect(response.status).toBe(400);
-						expect(response.body.message).toBe('Invalid project id');
+						expect(response.body.error.message).toBe('Invalid project id.');
 					});
 
 					it('returns 400 when project not found', async () => {
@@ -247,7 +247,7 @@ describe('Project API', () => {
 							.send({ userId: aliceUserId })
 
 						expect(response.status).toBe(404);
-						expect(response.body.message).toBe('Error: No project found with that id');
+						expect(response.body.error.message).toBe('Project not found.');
 					});
 
 					it('returns 404 when invalid user to add as member id', async () => {
@@ -257,7 +257,7 @@ describe('Project API', () => {
 							.send({ userId: 'abc' })
 
 						expect(response.status).toBe(400);
-						expect(response.body.message).toBe('Invalid user id');
+						expect(response.body.error.message).toBe('Invalid user id.');
 					});
 
 					it('returns 404 when user to add as member is not found', async () => {
@@ -267,7 +267,7 @@ describe('Project API', () => {
 							.send({ userId: 9999 })
 
 						expect(response.status).toBe(404);
-						expect(response.body.message).toBe('No user found with the provided id');
+						expect(response.body.error.message).toBe('No user found with the provided id.');
 					});
 
 					it('returns 409 when user to add as member is already a member', async () => {
@@ -277,7 +277,7 @@ describe('Project API', () => {
 							.send({ userId: johnUserId })
 
 						expect(response.status).toBe(409);
-						expect(response.body.message).toBe('User is already a member of this project');
+						expect(response.body.error.message).toBe('User is already a member of this project.');
 					});
 
 					it('returns 401 when not authenticated', async () => {
@@ -286,7 +286,7 @@ describe('Project API', () => {
 							.send({ userId: aliceUserId })
 
 						expect(response.status).toBe(401);
-						expect(response.body.error).toBe('token missing');
+						expect(response.body.error.message).toBe('Authentication token is missing.');
 					});
 				});
 
@@ -322,7 +322,7 @@ describe('Project API', () => {
 							});
 
 						expect(response.status).toBe(400);
-						expect(response.body.message).toBe('Invalid project id');
+						expect(response.body.error.message).toBe('Invalid project id.');
 					});
 
 					it('returns 404 when project does not exist', async () => {
@@ -335,7 +335,7 @@ describe('Project API', () => {
 							});
 
 						expect(response.status).toBe(404);
-						expect(response.body.message).toBe('Error: No project found with that id');
+						expect(response.body.error.message).toBe('Project not found.');
 					});
 
 					it('returns 401 when unauthenticated', async () => {
@@ -348,7 +348,7 @@ describe('Project API', () => {
 							});
 
 						expect(response.status).toBe(401);
-						expect(response.body.error).toBe('token invalid');
+						expect(response.body.error.message).toBe('Authentication token is invalid.');
 					});
 				});
 
@@ -359,7 +359,6 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(200);
-						expect(response.body.message).toBe('Project deleted');
 
 						const project = await prisma.project.findUnique({
 							where: {
@@ -376,7 +375,7 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(400);
-						expect(response.body.message).toBe('Invalid project id');
+						expect(response.body.error.message).toBe('Invalid project id.');
 					});
 
 					it('returns 404 when project does not exist', async () => {
@@ -385,7 +384,7 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(404);
-						expect(response.body.message).toBe('Error: No project found with that id');
+						expect(response.body.error.message).toBe('Project not found.');
 					});
 
 					it('returns 401 when unauthenticated', async () => {
@@ -393,7 +392,7 @@ describe('Project API', () => {
 							.delete(`/api/projects/${firstProjectId}`);
 
 						expect(response.status).toBe(401);
-						expect(response.body.error).toBe('token missing');
+						expect(response.body.error.message).toBe('Authentication token is missing.');
 					});
 				});
 
@@ -423,7 +422,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`)
 
 							expect(response.status).toBe(400);
-							expect(response.body.message).toBe('Invalid project id');
+							expect(response.body.error.message).toBe('Invalid project id.');
 						});
 
 						it('returns 400 when project not found', async () => {
@@ -432,7 +431,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`)
 
 							expect(response.status).toBe(404);
-							expect(response.body.message).toBe('Error: No project found with that id');
+							expect(response.body.error.message).toBe('Project not found.');
 						});
 
 						it('returns 401 when not authenticated', async () => {
@@ -440,7 +439,7 @@ describe('Project API', () => {
 								.get(`/api/projects/${firstProjectId}/members`)
 
 							expect(response.status).toBe(401);
-							expect(response.body.error).toBe('token missing');
+							expect(response.body.error.message).toBe('Authentication token is missing.');
 						});
 					});
 
@@ -471,7 +470,7 @@ describe('Project API', () => {
 								});
 
 							expect(response.status).toBe(403);
-							expect(response.body.message).toBe('Forbidden: User does not own this project');
+							expect(response.body.error.message).toBe('You must be a project admin to perform this action.');
 						});
 					});
 
@@ -498,7 +497,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`);
 
 							expect(response.status).toBe(403);
-							expect(response.body.message).toBe('Forbidden: User does not own this project');
+							expect(response.body.error.message).toBe('You must be a project admin to perform this action.');
 						});
 					});
 				});
@@ -523,7 +522,7 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`);
 
 						expect(response.status).toBe(404);
-						expect(response.body.message).toBe('User is not a member of this project');
+						expect(response.body.error.message).toBe('User is not a member of this project.');
 					});
 				});
 
@@ -542,7 +541,6 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`);
 
 							expect(response.status).toBe(200);
-							expect(response.body.message).toBe('Member removed from project successfully');
 						});
 
 						it('returns 400 for invalid project id', async () => {
@@ -551,7 +549,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`);
 
 							expect(response.status).toBe(400);
-							expect(response.body.message).toBe('Invalid project id');
+							expect(response.body.error.message).toBe('Invalid project id.');
 						});
 
 						it('returns 404 when project does not exist', async () => {
@@ -560,7 +558,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`);
 
 							expect(response.status).toBe(404);
-							expect(response.body.message).toBe('Error: No project found with that id');
+							expect(response.body.error.message).toBe('Project not found.');
 						});
 
 						it('returns 400 for invalid member id', async () => {
@@ -569,7 +567,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`);
 
 							expect(response.status).toBe(400);
-							expect(response.body.message).toBe('Invalid member id');
+							expect(response.body.error.message).toBe('Invalid member id.');
 						});
 
 						it('returns 400 when user tries to remove himself from project', async () => {
@@ -578,7 +576,7 @@ describe('Project API', () => {
 								.set('Authorization', `Bearer ${authToken}`);
 
 							expect(response.status).toBe(400);
-							expect(response.body.message).toBe('You cannot remove yourself from the project');
+							expect(response.body.error.message).toBe('You cannot remove yourself from the project.');
 						});
 
 						it('returns 401 if unauthorized', async () => {
@@ -586,7 +584,7 @@ describe('Project API', () => {
 								.delete(`/api/projects/${firstProjectId}/members/${aliceUserId}`);
 
 							expect(response.status).toBe(401);
-							expect(response.body.error).toBe('token missing');
+							expect(response.body.error.message).toBe('Authentication token is missing.');
 						});
 					});
 				});
