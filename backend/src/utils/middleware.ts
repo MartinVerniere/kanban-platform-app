@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import type { Request, Response, NextFunction } from 'express';
 import { SECRET } from './config.js';
 import { prisma } from '../prisma.js';
-import type { User } from '../generated/prisma/client.js';
+import { ProjectRole, type User } from '../generated/prisma/client.js';
 
 interface TokenPayload {
 	id: number;
@@ -69,3 +69,76 @@ export const userExtractor = async (
 
 	next();
 }
+
+export const projectExtractor = async (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const requestProjectId = Number(request.params.id);
+	if (!Number.isInteger(requestProjectId)) {
+		response.status(400).json({ message: 'Invalid project id' });
+		return;
+	}
+
+	const project = await prisma.project.findUnique({
+		where: { id: requestProjectId },
+		include: {
+			members: {
+				include: {
+					user: {
+						select: {
+							id: true,
+							username: true,
+							email: true
+						}
+					}
+				}
+			}
+		}
+	});
+
+	if (!project) {
+		response.status(404).json({ message: 'Error: No project found with that id' });
+		return;
+	}
+
+	request.project = project;
+
+	next();
+};
+
+export const requireProjectMember = async (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const userId = request.user.id;
+	const project = request.project!;
+
+	const membership = project.members.find(member => member.userId === userId);
+
+	if (!membership) {
+		response.status(403).json({ message: 'Forbidden: User does not have access to this project' });
+		return;
+	}
+
+	request.projectMember = membership;
+
+	next();
+}
+
+export const requireProjectAdminRole = async (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const projectMember = request.projectMember!;
+
+	if (projectMember.role !== ProjectRole.ADMIN) {
+		response.status(403).json({ message: 'Forbidden: User does not own this project' });
+		return;
+	}
+
+	next();
+};

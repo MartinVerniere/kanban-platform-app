@@ -1,13 +1,17 @@
 import type { JwtPayload } from 'jsonwebtoken';
-import type { User } from '../generated/prisma/client.ts';
+import type { Project, ProjectMember, User } from '../generated/prisma/client.ts';
 
 declare global {
-  namespace Express {
-    interface Request {
-      user: User;
-	  decodedToken: JwtPayload;
-    }
-  }
+	namespace Express {
+		interface Request {
+			user: User;
+			decodedToken: JwtPayload;
+			project?: Project & {
+				members: ProjectMember[];
+			};
+			projectMember?: ProjectMember;
+		}
+	}
 }
 
-export {};
+export { };

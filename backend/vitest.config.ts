@@ -5,5 +5,6 @@ export default defineConfig({
 		setupFiles: ['./src/utils/config.ts'],
 		environment: 'node',
 		clearMocks: true,
+		fileParallelism: false,
 	},
 });

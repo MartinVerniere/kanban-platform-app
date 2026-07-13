@@ -1,0 +1,131 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { MemberForm } from './member-form';
+import { provideRouter } from '@angular/router';
+import { Project, ProjectService } from '../services/project-service';
+import { UserService } from '../services/user-service';
+import { of, throwError } from 'rxjs';
+
+describe('MemberForm', () => {
+	let fixture: ComponentFixture<MemberForm>;
+	let component: MemberForm;
+
+	const projectServiceMock = { addMember: vi.fn() };
+	const userServiceMock = { getUsers: vi.fn() };
+
+	const project: Project = {
+		id: 1,
+		name: 'Project A',
+		key: 'PRA',
+		description: '',
+		members: [
+			{
+				id: 1,
+				role: 'ADMIN',
+				user: {
+					id: 10,
+					username: 'john',
+					email: 'john@email.com'
+				}
+			}
+		]
+	};
+
+	const users = [
+		{
+			id: 10,
+			name: 'Existing User'
+		},
+		{
+			id: 20,
+			name: 'New User'
+		}
+	];
+
+	async function createComponent(shouldAwait: boolean = true) {
+		fixture = TestBed.createComponent(MemberForm);
+		component = fixture.componentInstance;
+
+		fixture.componentRef.setInput('project', project);
+
+		fixture.detectChanges();
+
+		if (shouldAwait) {
+			await fixture.whenStable();
+			fixture.detectChanges();
+		}
+	}
+
+	beforeEach(async () => {
+		vi.clearAllMocks();
+
+		userServiceMock.getUsers.mockReturnValue(of(users));
+
+		await TestBed.configureTestingModule({
+			imports: [MemberForm],
+			providers: [
+				{ provide: ProjectService, useValue: projectServiceMock },
+				{ provide: UserService, useValue: userServiceMock },
+				provideRouter([])
+			]
+		}).compileComponents();
+	});
+
+	it('should create', async () => {
+		await createComponent();
+
+		expect(component).toBeTruthy();
+	});
+
+	it('should filter out users already in the project', async () => {
+		await createComponent();
+
+		expect(component.possibleUsers()).toEqual([{ id: 20, name: 'New User' }]);
+	});
+
+	it('should add member and emit memberAdded', async () => {
+		projectServiceMock.addMember.mockReturnValue(of({}));
+
+		await createComponent();
+
+		const emitSpy = vi.spyOn(component.memberAdded, 'emit');
+
+		component.memberModel.set({ userId: '20' });
+
+		await component.onSubmit(new Event('submit'));
+
+		expect(projectServiceMock.addMember).toHaveBeenCalledWith(1, 20);
+		expect(emitSpy).toHaveBeenCalled();
+		expect(component.memberModel()).toEqual({ userId: '' });
+	});
+
+	it('should set error when adding member fails', async () => {
+		projectServiceMock.addMember.mockReturnValue(throwError(() => ({ error: { message: 'Member already exists' } })));
+
+		await createComponent();
+
+		component.memberModel.set({ userId: '20' });
+
+		await component.onSubmit(new Event('submit'));
+
+		expect(component.error()).toBe('Member already exists');
+	});
+
+	it('should not add member when no user is selected', async () => {
+		await createComponent();
+
+		await component.onSubmit(new Event('submit'));
+
+		expect(projectServiceMock.addMember).not.toHaveBeenCalled();
+	});
+
+	it('should emit canceledMemberAdd on cancel', async () => {
+		await createComponent();
+
+		const emitSpy = vi.spyOn(component.canceledMemberAdd, 'emit');
+
+		component.onCancel();
+
+		expect(emitSpy).toHaveBeenCalled();
+	});
+});

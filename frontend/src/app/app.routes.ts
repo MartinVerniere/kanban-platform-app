@@ -3,6 +3,9 @@ import { Login } from './login/login';
 import { Home } from './home/home';
 import { Register } from './register/register';
 import { authGuard } from './auth.guard';
+import { ProjectList } from './project-list/project-list';
+import { ProjectDetails } from './project-details/project-details';
+import { ProjectForm } from './project-form/project-form';
 
 export const routes: Routes = [
 	{
@@ -17,5 +20,17 @@ export const routes: Routes = [
 	{
 		path: 'register',
 		component: Register
+	},
+	{
+		path: 'projects',
+		component: ProjectList
+	},
+	{
+		path: 'projects/create',
+		component: ProjectForm
+	},
+	{
+		path: 'projects/:id',
+		component: ProjectDetails
 	}
 ];

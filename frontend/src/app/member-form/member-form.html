@@ -1,0 +1,29 @@
+<form class="member-form" (submit)="(onSubmit($event))">
+	<div class="form-grid">
+		<div class="form-group">
+			<label class="form-label" for="userId"> User </label>
+			<select id="userId" class="form-input" [formField]="memberForm.userId">
+				@for (user of possibleUsers(); track user.id) {
+				<option [value]="user.id">
+					{{ user.username }} - {{ user.email }}
+				</option>
+				}
+			</select>
+		</div>
+
+		<div class="form-error">
+			@if (error()) {
+			<div class="error">
+				<span>{{ error() }}</span>
+			</div>
+			}
+		</div>
+
+		<div class="form-actions">
+			<button class="btn btn-primary" type="submit" [disabled]="memberForm().invalid()">
+				Add Member
+			</button>
+			<button (click)="onCancel()">Cancel</button>
+		</div>
+	</div>
+</form>

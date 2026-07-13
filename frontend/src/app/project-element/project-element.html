@@ -1,0 +1,7 @@
+<a class="project-element" [routerLink]="['/projects', project().id]">
+	<h3 class="project-name">{{project().name}}</h3>
+	<div class="project-key">Key: {{project().key}}</div>
+	@if (project().description) {
+		<div class="project-description">Description: {{project().description}}</div>
+	}
+</a>
