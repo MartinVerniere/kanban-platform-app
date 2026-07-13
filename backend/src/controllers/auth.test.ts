@@ -213,8 +213,4 @@ describe('Auth API', () => {
 			});
 		});
 	});
-
-	afterAll(async () => {
-		await prisma.$disconnect();
-	});
 });
