@@ -37,7 +37,7 @@ export class ProjectService {
 	}
 
 	createProject(project: ProjectModel): Observable<Project> {
-		return this.http.post<Project>(`${API_URL}/`, project);
+		return this.http.post<Project>(`${API_URL}`, project);
 	}
 
 	updateProject(id: number, project: Project): void { }
