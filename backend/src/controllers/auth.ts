@@ -22,7 +22,7 @@ authRouter.post('/register', async (request: Request, response: Response) => {
 	if (usernameTaken) return response.status(400).json({ message: 'Username is already taken' });
 
 	const emailTaken: User | null = await prisma.user.findUnique({ where: { email } });
-	if (emailTaken) return response.status(400).json({ message: 'Email is already registered' });
+	if (emailTaken) return response.status(400).json({ message: 'Email is already taken' });
 
 	const hashedPassword: string = await bcrypt.hash(password, 10);
 
