@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
@@ -61,7 +61,11 @@ export class AuthService {
 		// If it has a token, check to which user it connects to, and set currentUser, and if token is expired log out
 		this.me().subscribe({
 			next: (user) => this.currentUser.set(user),
-			error: () => this.logout()
+			error: (response: HttpErrorResponse) => {
+				const errorObject = response.error.error;
+				console.log(errorObject);
+				this.logout();
+			}
 		});
 	}
 

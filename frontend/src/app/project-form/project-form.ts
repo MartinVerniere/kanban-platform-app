@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { ProjectService } from '../services/project-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface ProjectModel {
 	name: string;
@@ -19,7 +20,7 @@ export interface ProjectModel {
 export class ProjectForm {
 	router = inject(Router);
 	projectService = inject(ProjectService);
-	
+
 	projectModel = signal<ProjectModel>({
 		name: '',
 		key: '',
@@ -42,8 +43,10 @@ export class ProjectForm {
 					this.error.set(null);
 					this.router.navigate(['/projects']);
 				},
-				error: (error) => {
-					this.error.set(error.error.message);
+				error: (response: HttpErrorResponse) => {
+					const errorObject = response.error.error;
+					console.log(errorObject);
+					this.error.set(errorObject.message);
 				}
 			});
 

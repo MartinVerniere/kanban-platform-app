@@ -9,6 +9,37 @@ interface TokenPayload {
 	username: string;
 }
 
+export class ApiError extends Error {
+	constructor(public status: number, public code: string, message: string) {
+		super(message);
+	}
+}
+
+export const errorHandler = (
+	error: unknown,
+	_request: Request,
+	response: Response,
+	_next: NextFunction
+) => {
+	console.error(error);
+
+	if (error instanceof ApiError) {
+		return response.status(error.status).json({
+			error: {
+				code: error.code,
+				message: error.message
+			}
+		});
+	}
+
+	return response.status(500).json({
+		error: {
+			code: "INTERNAL_SERVER_ERROR",
+			message: "An unexpected error occurred."
+		}
+	});
+};
+
 export const loggerMiddleware = (
 	request: Request,
 	response: Response,
@@ -30,23 +61,16 @@ export const loggerMiddleware = (
 
 export const tokenExtractor = (
 	request: Request,
-	response: Response,
+	_response: Response,
 	next: NextFunction
 ): void => {
 	const authorization: string | undefined = request.get('authorization');
-	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-		try {
-			const secret: string | undefined = SECRET;
-			if (!secret) throw new Error("JWT secret is not defined");
+	if (!authorization || !authorization.toLowerCase().startsWith('bearer ')) throw new ApiError(401, "TOKEN_MISSING", "Authentication token is missing.");
 
-			request.decodedToken = jwt.verify(authorization.substring(7), secret) as TokenPayload;
-		} catch {
-			response.status(401).json({ error: 'token invalid' });
-			return
-		}
-	} else {
-		response.status(401).json({ error: 'token missing' });
-		return
+	try {
+		request.decodedToken = jwt.verify(authorization.substring(7), SECRET) as TokenPayload;
+	} catch {
+		throw new ApiError(401, "TOKEN_INVALID", "Authentication token is invalid.");
 	}
 
 	next();
@@ -54,16 +78,13 @@ export const tokenExtractor = (
 
 export const userExtractor = async (
 	request: Request,
-	response: Response,
+	_response: Response,
 	next: NextFunction
 ): Promise<void> => {
 	const userId: number = request.decodedToken.id;
 
 	const user: User | null = await prisma.user.findUnique({ where: { id: userId } });
-	if (!user) {
-		response.status(404).json({ message: 'User not found' });
-		return;
-	}
+	if (!user) throw new ApiError(404, "USER_NOT_FOUND", "User not found.");
 
 	request.user = user;
 
@@ -72,14 +93,11 @@ export const userExtractor = async (
 
 export const projectExtractor = async (
 	request: Request,
-	response: Response,
+	_response: Response,
 	next: NextFunction
 ): Promise<void> => {
 	const requestProjectId = Number(request.params.id);
-	if (!Number.isInteger(requestProjectId)) {
-		response.status(400).json({ message: 'Invalid project id' });
-		return;
-	}
+	if (!Number.isInteger(requestProjectId)) throw new ApiError(400, "INVALID_PROJECT_ID", "Invalid project id.");
 
 	const project = await prisma.project.findUnique({
 		where: { id: requestProjectId },
@@ -97,11 +115,7 @@ export const projectExtractor = async (
 			}
 		}
 	});
-
-	if (!project) {
-		response.status(404).json({ message: 'Error: No project found with that id' });
-		return;
-	}
+	if (!project) throw new ApiError(404, "PROJECT_NOT_FOUND", "Project not found.");
 
 	request.project = project;
 
@@ -110,18 +124,14 @@ export const projectExtractor = async (
 
 export const requireProjectMember = async (
 	request: Request,
-	response: Response,
+	_response: Response,
 	next: NextFunction
 ): Promise<void> => {
 	const userId = request.user.id;
 	const project = request.project!;
 
 	const membership = project.members.find(member => member.userId === userId);
-
-	if (!membership) {
-		response.status(403).json({ message: 'Forbidden: User does not have access to this project' });
-		return;
-	}
+	if (!membership) throw new ApiError(403, "PROJECT_ACCESS_DENIED", "You do not have access to this project.");
 
 	request.projectMember = membership;
 
@@ -130,15 +140,11 @@ export const requireProjectMember = async (
 
 export const requireProjectAdminRole = async (
 	request: Request,
-	response: Response,
+	_response: Response,
 	next: NextFunction
 ): Promise<void> => {
 	const projectMember = request.projectMember!;
-
-	if (projectMember.role !== ProjectRole.ADMIN) {
-		response.status(403).json({ message: 'Forbidden: User does not own this project' });
-		return;
-	}
+	if (projectMember.role !== ProjectRole.ADMIN) throw new ApiError(403, "INSUFFICIENT_PERMISSIONS", "You must be a project admin to perform this action.");
 
 	next();
 };

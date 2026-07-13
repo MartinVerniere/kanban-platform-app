@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
-import { projectExtractor, requireProjectAdminRole, requireProjectMember, tokenExtractor, userExtractor } from '../utils/middleware.js';
+import { ApiError, projectExtractor, requireProjectAdminRole, requireProjectMember, tokenExtractor, userExtractor } from '../utils/middleware.js';
 import { prisma } from '../prisma.js';
-import { ProjectRole, type Project } from '../generated/prisma/client.js';
+import { ProjectRole } from '../generated/prisma/client.js';
 
 const projectRouter = Router();
 
@@ -50,8 +50,8 @@ projectRouter.post('/', tokenExtractor, userExtractor, async (request: Request, 
 	const userId = request.user.id;
 	const { name, key, description } = request.body;
 
-	const projectKeyExists: Project | null = await prisma.project.findUnique({ where: { key } });
-	if (projectKeyExists) return response.status(400).json({ message: 'An existing project already uses that key' });
+	const projectKeyExists = await prisma.project.findUnique({ where: { key } });
+	if (projectKeyExists) throw new ApiError(409, "PROJECT_KEY_EXISTS", "A project with this key already exists.");
 
 	const newProject = await prisma.$transaction(async (tx) => {
 		const project = await tx.project.create({
@@ -80,13 +80,13 @@ projectRouter.post('/:id/members', tokenExtractor, userExtractor, projectExtract
 	const memberUserId = Number(request.body.userId);
 	const project = request.project!;
 
-	if (Number.isNaN(memberUserId)) return response.status(400).json({ message: 'Invalid user id' });
+	if (Number.isNaN(memberUserId)) throw new ApiError(400, "INVALID_USER_ID", "Invalid user id.");
 
 	const user = await prisma.user.findUnique({ where: { id: memberUserId } });
-	if (!user) return response.status(404).json({ message: 'No user found with the provided id' });
+	if (!user) throw new ApiError(404, "USER_NOT_FOUND", "No user found with the provided id.");
 
 	const existingMembership = project.members.find(member => member.userId === memberUserId);
-	if (existingMembership) return response.status(409).json({ message: 'User is already a member of this project' });
+	if (existingMembership) throw new ApiError(409, "USER_ALREADY_PROJECT_MEMBER", "User is already a member of this project.");
 
 	const newMember = await prisma.projectMember.create({
 		data: {
@@ -101,18 +101,17 @@ projectRouter.post('/:id/members', tokenExtractor, userExtractor, projectExtract
 
 projectRouter.delete('/:id/members/:userId', tokenExtractor, userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
 	const memberUserId = Number(request.params.userId);
-	if (Number.isNaN(memberUserId)) return response.status(400).json({ message: 'Invalid member id' });
+	if (Number.isNaN(memberUserId)) throw new ApiError(400, "INVALID_MEMBER_ID", "Invalid member id.");
 
 	const project = request.project!;
 
 	const member = project.members.find(member => member.userId === memberUserId);
-	if (!member) return response.status(404).json({ message: 'User is not a member of this project' });
-
-	if (member.userId === request.user.id) return response.status(400).json({ message: 'You cannot remove yourself from the project' });
+	if (!member) throw new ApiError(404, "PROJECT_MEMBER_NOT_FOUND", "User is not a member of this project.");
+	if (member.userId === request.user.id) throw new ApiError(400, "CANNOT_REMOVE_SELF", "You cannot remove yourself from the project.");
 
 	await prisma.projectMember.delete({ where: { id: member.id } });
 
-	return response.status(200).json({ message: 'Member removed from project successfully' });
+	return response.status(200).send();
 });
 
 projectRouter.put('/:id', tokenExtractor, userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
@@ -139,7 +138,7 @@ projectRouter.delete('/:id', tokenExtractor, userExtractor, projectExtractor, re
 
 	await prisma.project.delete({ where: { id: project.id } })
 
-	return response.status(200).json({ message: 'Project deleted' });
+	return response.status(200).send();
 });
 
 export default projectRouter;

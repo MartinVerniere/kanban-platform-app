@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Health } from '../services/health';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 	selector: 'app-home',
@@ -20,8 +21,9 @@ export class Home {
 			next: (response) => {
 				console.log('Health status:', response);
 			},
-			error: (error) => {
-				console.error('Error fetching health status:', error);
+			error: (response: HttpErrorResponse) => {
+				const errorObject = response.error.error;
+				console.log(errorObject);
 			}
 		});
 	}
