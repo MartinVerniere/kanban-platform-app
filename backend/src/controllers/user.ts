@@ -21,7 +21,14 @@ userRouter.get('/:id', tokenExtractor, userExtractor, async (request: Request, r
 
 	if (!Number.isInteger(userId)) throw new ApiError(400, "INVALID_USER_ID", "Invalid user id.");
 
-	const user = await prisma.user.findUnique({ where: { id: userId } });
+	const user = await prisma.user.findUnique({ 
+		where: { id: userId },
+		select: {
+			id: true,
+			email: true,
+			username: true
+		} 
+	});
 
 	if (!user) throw new ApiError(404, "USER_NOT_FOUND", "Could not find user with that id.");
 
