@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from 'express';
-import { tokenExtractor, userExtractor } from '../utils/middleware.js';
+import { ApiError, tokenExtractor, userExtractor } from '../utils/middleware.js';
 import { prisma } from '../prisma.js';
 
 const userRouter = Router();
@@ -19,11 +19,11 @@ userRouter.get('/', tokenExtractor, userExtractor, async (request: Request, resp
 userRouter.get('/:id', tokenExtractor, userExtractor, async (request: Request, response: Response) => {
 	const userId = Number(request.params.id);
 
-	if (!Number.isInteger(userId)) return response.status(400).json({ message: 'Invalid user id' });
+	if (!Number.isInteger(userId)) throw new ApiError(400, "INVALID_USER_ID", "Invalid user id.");
 
 	const user = await prisma.user.findUnique({ where: { id: userId } });
 
-	if (!user) return response.status(404).json({ message: 'Couldnt find user with that id' });
+	if (!user) throw new ApiError(404, "USER_NOT_FOUND", "Could not find user with that id.");
 
 	return response.status(200).json(user);
 })
