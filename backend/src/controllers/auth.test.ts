@@ -21,7 +21,7 @@ describe('Auth API', () => {
 			});
 
 		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('Username is required');
+		expect(response.body.error.message).toBe('Username is required.');
 	});
 
 	it('returns 400 when email is missing', async () => {
@@ -33,7 +33,7 @@ describe('Auth API', () => {
 			});
 
 		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('Email is required');
+		expect(response.body.error.message).toBe('Email is required.');
 	});
 
 	it('returns 400 when password is missing', async () => {
@@ -45,7 +45,7 @@ describe('Auth API', () => {
 			});
 
 		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('Password is required');
+		expect(response.body.error.message).toBe('Password is required.');
 	});
 
 	it('returns 400 when password too short', async () => {
@@ -58,7 +58,7 @@ describe('Auth API', () => {
 			});
 
 		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('Password must be at least 8 characters long');
+		expect(response.body.error.message).toBe('Password must be at least 8 characters long.');
 	});
 
 	describe('when no user exists', () => {
@@ -95,6 +95,7 @@ describe('Auth API', () => {
 					});
 
 				expect(response.status).toBe(401);
+				expect(response.body.error.message).toBe("Invalid username or password.");
 			});
 		});
 	});
@@ -124,8 +125,8 @@ describe('Auth API', () => {
 						password: 'password123',
 					});
 
-				expect(response.status).toBe(400);
-				expect(response.body.message).toBe('Username is already taken');
+				expect(response.status).toBe(409);
+				expect(response.body.error.message).toBe('Username is already taken.');
 			});
 
 			it('blocks duplicate email', async () => {
@@ -137,8 +138,8 @@ describe('Auth API', () => {
 						password: 'password123',
 					});
 
-				expect(response.status).toBe(400);
-				expect(response.body.message).toBe('Email is already taken');
+				expect(response.status).toBe(409);
+				expect(response.body.error.message).toBe('Email is already taken.');
 			});
 		});
 
@@ -152,6 +153,7 @@ describe('Auth API', () => {
 					});
 
 				expect(response.status).toBe(401);
+				expect(response.body.error.message).toBe("Invalid username or password.");
 			});
 
 			it('returns token on success', async () => {
@@ -192,7 +194,7 @@ describe('Auth API', () => {
 					.get('/api/auth/me');
 
 				expect(response.status).toBe(401);
-				expect(response.body.error).toBe('token missing');
+				expect(response.body.error.message).toBe('Authentication token is missing.');
 			});
 
 			it('fails when token decoding fails', async () => {
@@ -207,7 +209,7 @@ describe('Auth API', () => {
 					.set('Authorization', `Bearer ${token}`);
 
 				expect(response.status).toBe(401);
-				expect(response.body.error).toBe('token invalid');
+				expect(response.body.error.message).toBe('Authentication token is invalid.');
 			});
 		});
 	});
