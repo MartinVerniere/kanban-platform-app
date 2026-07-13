@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Project, ProjectService } from '../services/project-service';
 import { UserService } from '../services/user-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface MemberModel {
 	userId: string;
@@ -56,8 +57,10 @@ export class MemberForm {
 					this.error.set(null);
 					this.memberAdded.emit();
 				},
-				error: (error) => {
-					this.error.set(error.error.message);
+				error: (response: HttpErrorResponse) => {
+					const errorObject = response.error.error;
+					console.log(errorObject);
+					this.error.set(errorObject.message);
 				}
 			});
 

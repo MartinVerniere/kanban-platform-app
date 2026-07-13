@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { AuthService } from '../services/auth-service';
 import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface LoginModel {
 	username: string;
@@ -34,15 +35,15 @@ export class Login {
 
 		submit(this.loginForm, async () => {
 			this.authService.login(this.loginModel()).subscribe({
-				next: (response) => {
-					//console.log('User logged in successfully:', response);
+				next: () => {
 					this.resetForm();
 					this.error.set(null);
 					this.router.navigate(['/']);
 				},
-				error: (error) => {
-					//console.error('Error logging in user:', error);
-					this.error.set(error.error.message);
+				error: (response: HttpErrorResponse) => {
+					const errorObject = response.error.error;
+					console.log(errorObject);
+					this.error.set(errorObject.message);
 				}
 			});
 		});

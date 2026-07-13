@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../services/auth-service';
 import { email, form, FormField, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface RegisterModel {
 	username: string;
@@ -37,17 +38,16 @@ export class Register {
 		event.preventDefault();
 
 		submit(this.registerForm, async () => {
-			//console.log('Registering user:', this.registerModel());
 			this.authService.register(this.registerModel()).subscribe({
-				next: (response) => {
-					//console.log('User registered successfully:', response);
+				next: () => {
 					this.resetForm();
 					this.error.set(null);
 					this.router.navigate(['/login']);
 				},
-				error: (error) => {
-					//console.error('Error registering user:', error);
-					this.error.set(error.error.message);
+				error: (response: HttpErrorResponse) => {
+					const errorObject = response.error.error;
+					console.log(errorObject);
+					this.error.set(errorObject.message);
 				}
 			});
 		});
