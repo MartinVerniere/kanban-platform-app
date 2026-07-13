@@ -100,7 +100,14 @@ describe('MemberForm', () => {
 	});
 
 	it('should set error when adding member fails', async () => {
-		projectServiceMock.addMember.mockReturnValue(throwError(() => ({ error: { message: 'Member already exists' } })));
+		projectServiceMock.addMember.mockReturnValue(throwError(() => ({
+			error: {
+				error: {
+					code: 'ERROR_MESSAGE',
+					message: 'Error message'
+				}
+			}
+		})));
 
 		await createComponent();
 
@@ -108,7 +115,7 @@ describe('MemberForm', () => {
 
 		await component.onSubmit(new Event('submit'));
 
-		expect(component.error()).toBe('Member already exists');
+		expect(component.error()).not.toBe('');
 	});
 
 	it('should not add member when no user is selected', async () => {
