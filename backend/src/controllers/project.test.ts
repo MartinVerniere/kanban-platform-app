@@ -217,7 +217,7 @@ describe('Project API', () => {
 					});
 				});
 
-				describe('on add project member to project', () => {
+				describe('on add member to project', () => {
 					it('add member to member list', async () => {
 						const response = await request(app)
 							.post(`/api/projects/${firstProjectId}/members`)
