@@ -148,3 +148,51 @@ export const requireProjectAdminRole = async (
 
 	next();
 };
+
+export const boardExtractor = async (
+	request: Request,
+	_response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const requestBoardId = Number(request.params.id);
+	if (!Number.isInteger(requestBoardId)) throw new ApiError(400, "INVALID_BOARD_ID", "Invalid board id.");
+
+	const board = await prisma.board.findUnique({ where: { id: requestBoardId } });
+	if (!board) throw new ApiError(404, "BOARD_NOT_FOUND", "Board not found.");
+
+	request.board = board;
+
+	next();
+};
+
+export const requireBoardProjectMember = async (
+	request: Request,
+	_response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const userId = request.user.id;
+	const board = request.board!;
+
+	const membership = await prisma.projectMember.findFirst({
+		where: {
+			projectId: board.projectId,
+			userId: userId,
+		},
+	});
+	if (!membership) throw new ApiError(403, "PROJECT_ACCESS_DENIED", "You do not have access to this project.");
+
+	request.projectMember = membership;
+
+	next();
+}
+
+export const requireBoardProjectAdminRole = async (
+	request: Request,
+	_response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const projectMember = request.projectMember!;
+	if (projectMember.role !== ProjectRole.ADMIN) throw new ApiError(403, "INSUFFICIENT_PERMISSIONS", "You must be a project admin to perform this action.");
+
+	next();
+};
