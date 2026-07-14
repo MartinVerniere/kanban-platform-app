@@ -32,6 +32,7 @@ model Project {
 	updatedAt 	DateTime 	@updatedAt
 
 	members		ProjectMember[]
+	boards		Board[]
 }
 
 enum ProjectRole {
@@ -51,4 +52,15 @@ model ProjectMember {
 	role      ProjectRole
 
 	@@unique([projectId, userId])
+}
+
+model Board {
+	id        Int      @id @default(autoincrement())
+	name      String
+
+	projectId Int
+	project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
 }
