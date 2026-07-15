@@ -9,7 +9,7 @@
 	@if (project.value()?.description) {
 	<div class="project-description">Description: {{project.value()?.description}}</div>
 	}
-	<app-member-list [project]="project.value()!" (addedMember)="onMemberAdded()" (removedMember)="onRemoveMember()"></app-member-list>
+	<app-member-list [project]="project.value()!" (memberAdded)="onMemberAdded()" (memberRemoved)="onRemoveMember($event)"></app-member-list>
 	}
 	<button routerLink="/projects">Go back</button>
 </div>

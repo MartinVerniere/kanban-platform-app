@@ -1,6 +1,6 @@
 <div class="member-list">
 	Members
-	@for (member of members; track member) {
+	@for (member of members(); track member) {
 	<div class="member">
 		<div class="member-id">Id: {{member.user.id}}</div>
 		<div class="member-role">Role: {{member.role}}</div>
@@ -10,8 +10,8 @@
 	} @empty {
 	<div class="member-list-empty">No members in this project (Possible error)</div>
 	}
-	@if (project.hasValue() && addMemberFormEnabled) {
-	<app-member-form [project]="project.value()" (memberAdded)="onMemberAdded()"
+	@if (addMemberFormEnabled()) {
+	<app-member-form [project]="project()" (memberAdded)="onMemberAdded()"
 		(canceledMemberAdd)="onCancelAddMember()"></app-member-form>
 	} @else {
 	<button (click)="onEnableAddMember()">Add member</button>
