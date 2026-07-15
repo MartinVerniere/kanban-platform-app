@@ -53,4 +53,8 @@ export class ProjectService {
 	removeMember(projectId: number, userId: number): Observable<void> {
 		return this.http.delete<void>(`${API_URL}/${projectId}/members/${userId}`);
 	}
+
+	getBoards(projectId: number): Observable<void> {
+		return this.http.get<void>(`${API_URL}/${projectId}/boards`);
+	}
 }
