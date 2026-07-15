@@ -9,25 +9,7 @@
 	@if (project.value()?.description) {
 	<div class="project-description">Description: {{project.value()?.description}}</div>
 	}
-	<div class="project-members-list">
-		Members
-		@for (member of project.value()?.members; track member) {
-		<div class="project-member">
-			<div class="project-member-id">Id: {{member.user.id}}</div>
-			<div class="project-member-role">Role: {{member.role}}</div>
-			<div class="project-member-name">Name: {{member.user.username}}</div>
-			<button (click)="onRemoveMember($event, member.user.id)">Remove from project</button>
-		</div>
-		} @empty {
-		<div class="project-member-empty">No members in this project (Possible error)</div>
-		}
-		@if (project.hasValue() && addMemberFormEnabled) {
-		<app-member-form [project]="project.value()" (memberAdded)="onMemberAdded()"
-			(canceledMemberAdd)="onCancelAddMember()"></app-member-form>
-		} @else {
-		<button (click)="onEnableAddMember()">Add member</button>
-		}
-	</div>
+	<app-member-list [project]="project.value()!" (addedMember)="onMemberAdded()" (removedMember)="onRemoveMember()"></app-member-list>
 	}
 	<button routerLink="/projects">Go back</button>
 </div>
