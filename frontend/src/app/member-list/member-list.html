@@ -1,14 +1,14 @@
-<div class="project-members-list">
+<div class="member-list">
 	Members
 	@for (member of members; track member) {
-	<div class="project-member">
-		<div class="project-member-id">Id: {{member.user.id}}</div>
-		<div class="project-member-role">Role: {{member.role}}</div>
-		<div class="project-member-name">Name: {{member.user.username}}</div>
+	<div class="member">
+		<div class="member-id">Id: {{member.user.id}}</div>
+		<div class="member-role">Role: {{member.role}}</div>
+		<div class="member-name">Name: {{member.user.username}}</div>
 		<button (click)="onRemoveMember(member.user.id)">Remove from project</button>
 	</div>
 	} @empty {
-	<div class="project-member-empty">No members in this project (Possible error)</div>
+	<div class="member-list-empty">No members in this project (Possible error)</div>
 	}
 	@if (project.hasValue() && addMemberFormEnabled) {
 	<app-member-form [project]="project.value()" (memberAdded)="onMemberAdded()"
