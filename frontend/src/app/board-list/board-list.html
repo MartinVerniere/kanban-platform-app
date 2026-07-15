@@ -1,0 +1,24 @@
+<div class="board-list">
+	<h2 class="board-list-title">Boards</h2>
+
+	@if (boardList.isLoading()) {
+		<div class="loading">Loading...</div>
+	  } @else if (boardList.error()) {
+		<div class="error">Error loading boards</div>
+	  } @else {
+		<div class="board-list-items">
+			@for (board of boardList.value(); track board.id) {
+				<div class="board-list">
+					<app-board-element [board]="board">
+					</app-board-element>
+					<button (click)="onDeleteBoard($event, board.id)">Delete board</button>
+				</div>
+			} @empty {
+			<div class="board-list-empty">
+				No boards yet.
+			</div>
+			}
+		</div>
+		<button routerLink="/boards/create">Create new board</button>
+	  }
+</div>
