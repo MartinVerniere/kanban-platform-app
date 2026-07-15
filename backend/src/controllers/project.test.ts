@@ -431,8 +431,6 @@ describe('Project API', () => {
 							.set('Authorization', `Bearer ${authToken}`)
 							.send({});
 
-						console.log("Error >>", response);
-
 						expect(response.status).toBe(400);
 						expect(response.body.error.message).toBe("Board name is required.");
 					});
