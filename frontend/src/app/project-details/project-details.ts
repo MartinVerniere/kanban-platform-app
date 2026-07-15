@@ -3,10 +3,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ProjectService } from '../services/project-service';
 import { MemberList } from '../member-list/member-list';
+import { BoardList } from '../board-list/board-list';
 
 @Component({
 	selector: 'app-project-details',
-	imports: [RouterLink, MemberList],
+	imports: [RouterLink, MemberList, BoardList],
 	templateUrl: './project-details.html',
 	styleUrl: './project-details.css',
 })

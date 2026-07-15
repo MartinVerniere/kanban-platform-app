@@ -9,6 +9,7 @@
 	@if (project.value()?.description) {
 	<div class="project-description">Description: {{project.value()?.description}}</div>
 	}
+	<app-board-list [projectId]="project.value()!.id"></app-board-list>
 	<app-member-list [project]="project.value()!" (memberAdded)="onMemberAdded()" (memberRemoved)="onRemoveMember($event)"></app-member-list>
 	}
 	<button routerLink="/projects">Go back</button>
