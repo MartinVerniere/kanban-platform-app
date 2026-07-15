@@ -141,4 +141,27 @@ projectRouter.delete('/:id', tokenExtractor, userExtractor, projectExtractor, re
 	return response.status(200).send();
 });
 
+projectRouter.get("/:id/boards", tokenExtractor, userExtractor, projectExtractor, requireProjectMember, async (request: Request, response: Response) => {
+	const boards = await prisma.board.findMany({ where: { projectId: request.project!.id, } });
+
+	return response.status(200).json(boards);
+});
+
+projectRouter.post("/:id/boards", tokenExtractor, userExtractor, projectExtractor, requireProjectMember, requireProjectAdminRole, async (request: Request, response: Response) => {
+	const project = request.project!;
+
+	const { name } = request.body;
+
+	if (!name) throw new ApiError(400, "BOARD_NAME_REQUIRED", "Board name is required.");
+	if (typeof name !== "string") throw new ApiError(400, "BOARD_NAME_INVALID", "Board name must be a string.");
+	if (name.trim() === "") throw new ApiError(400, "BOARD_NAME_REQUIRED", "Board name is required.");
+
+	const boardExists = await prisma.board.findUnique({ where: { projectId_name: { projectId: project.id, name } } });
+	if (boardExists) throw new ApiError(409, "BOARD_EXISTS", "A board with this name already exists in the project.");
+
+	const newBoard = await prisma.board.create({ data: { name: name, projectId: project.id } });
+
+	return response.status(201).json(newBoard);
+});
+
 export default projectRouter;
