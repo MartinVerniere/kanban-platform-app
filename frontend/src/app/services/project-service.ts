@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProjectModel } from '../project-form/project-form';
+import { Board } from './board-service';
 
 const API_URL = 'http://localhost:3000/api/projects';
 
@@ -54,7 +55,7 @@ export class ProjectService {
 		return this.http.delete<void>(`${API_URL}/${projectId}/members/${userId}`);
 	}
 
-	getBoards(projectId: number): Observable<void> {
-		return this.http.get<void>(`${API_URL}/${projectId}/boards`);
+	getBoards(projectId: number): Observable<Board[]> {
+		return this.http.get<Board[]>(`${API_URL}/${projectId}/boards`);
 	}
 }
