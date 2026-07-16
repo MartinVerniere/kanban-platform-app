@@ -19,14 +19,15 @@ export class BoardUpdateForm {
 
 	projectId = Number(this.route.snapshot.paramMap.get('projectId'));
 	boardId = Number(this.route.snapshot.paramMap.get('boardId'));
-	boardUpdated = output<void>();
-	canceledBoardUpdated = output<void>();
 
 	currentBoard = resource({ loader: () => firstValueFrom(this.boardService.getBoard(this.boardId)) });
+
 	boardModel = signal<BoardModel>({ name: '' });
+
 	boardForm = form(this.boardModel, (fieldPath) => {
 		required(fieldPath.name, { message: 'name is required' });
 	});
+
 	error = signal<string | null>(null);
 
 	constructor() {
@@ -35,9 +36,7 @@ export class BoardUpdateForm {
 
 			if (!board) return;
 
-			this.boardModel.set({
-				name: board.name,
-			});
+			this.boardModel.set({ name: board.name });
 		});
 	}
 

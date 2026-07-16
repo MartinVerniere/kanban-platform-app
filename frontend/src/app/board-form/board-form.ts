@@ -20,8 +20,6 @@ export class BoardForm {
 	route = inject(ActivatedRoute);
 
 	projectId = Number(this.route.snapshot.paramMap.get('id'));
-	boardAdded = output<void>();
-	canceledBboardAdded = output<void>();
 
 	boardModel = signal<BoardModel>({
 		name: ''

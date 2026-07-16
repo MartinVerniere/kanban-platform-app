@@ -3,20 +3,51 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoardElement } from './board-element';
 
 describe('BoardElement', () => {
-  let component: BoardElement;
-  let fixture: ComponentFixture<BoardElement>;
+	let fixture: ComponentFixture<BoardElement>;
+	let component: BoardElement;
+	let html: HTMLElement;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [BoardElement],
-    }).compileComponents();
+	const board = {
+		id: 1,
+		name: 'Board A',
+	};
 
-    fixture = TestBed.createComponent(BoardElement);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
+	const projectId = 1;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	async function createComponent(shouldAwait: boolean = true) {
+		fixture = TestBed.createComponent(BoardElement);
+		component = fixture.componentInstance;
+		html = fixture.nativeElement;
+
+		fixture.componentRef.setInput('board', board);
+		fixture.componentRef.setInput('projectId', projectId);
+
+		fixture.detectChanges();
+
+		if (shouldAwait) {
+			await fixture.whenStable();
+			fixture.detectChanges();
+		}
+	}
+
+	beforeEach(async () => {
+		vi.clearAllMocks();
+
+		await TestBed.configureTestingModule({
+			imports: [BoardElement],
+			providers: []
+		}).compileComponents();
+	});
+
+	it('should create', async () => {
+		await createComponent();
+
+		expect(component).toBeTruthy();
+	});
+
+	it('should render board information', async () => {
+		await createComponent();
+
+		expect(html.textContent).toContain('Board A');
+	});
 });

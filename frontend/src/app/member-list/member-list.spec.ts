@@ -1,10 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MemberList } from './member-list';
-import { Project } from '../services/project-service';
+import { Project, ProjectService } from '../services/project-service';
+import { of } from 'rxjs';
 
 describe('MemberList', () => {
 	let fixture: ComponentFixture<MemberList>;
 	let component: MemberList;
+
+	const projectServiceMock = {
+		getProject: vi.fn(),
+		removeMember: vi.fn()
+	};
 
 	const project: Project = {
 		id: 1,
@@ -41,10 +47,13 @@ describe('MemberList', () => {
 	beforeEach(async () => {
 		vi.clearAllMocks();
 
+		projectServiceMock.removeMember.mockReturnValue(of({}));
 
 		await TestBed.configureTestingModule({
 			imports: [MemberList],
-			providers: []
+			providers: [
+				{ provide: ProjectService, useValue: projectServiceMock },
+			]
 		}).compileComponents();
 	});
 
@@ -84,13 +93,14 @@ describe('MemberList', () => {
 		expect(emitSpy).toHaveBeenCalled();
 	});
 
-	it('should emit memberRemoved when "remove member" button is clicked', async () => {
+	it('should remove member and emit memberRemoved when "remove member" button is clicked', async () => {
 		await createComponent();
 
 		const emitSpy = vi.spyOn(component.memberRemoved, 'emit');
 
 		component.onRemoveMember(10);
 
+		expect(projectServiceMock.removeMember).toHaveBeenCalledWith(1, 10);
 		expect(emitSpy).toHaveBeenCalledWith(10);
 	});
 });
