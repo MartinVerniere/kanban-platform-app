@@ -14,10 +14,10 @@ export class BoardService {
 	private http = inject(HttpClient);
 
 	updateBoard(boardId: number, request: Board): Observable<Board> {
-		return this.http.put<Board>(`${API_URL}/boards/${boardId}`, request);
+		return this.http.put<Board>(`${API_URL}/${boardId}`, request);
 	}
 
 	deleteBoard(boardId: number): Observable<void> {
-		return this.http.delete<void>(`${API_URL}/boards/${boardId}`);
+		return this.http.delete<void>(`${API_URL}/${boardId}`);
 	}
 }

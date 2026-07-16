@@ -1,7 +1,6 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Board } from '../services/board-service';
 import { ProjectService } from '../services/project-service';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -20,7 +19,7 @@ export class BoardForm {
 	projectService = inject(ProjectService);
 	route = inject(ActivatedRoute);
 
-	projectId = Number(this.route.snapshot.paramMap.get('projectId'));
+	projectId = Number(this.route.snapshot.paramMap.get('id'));
 	boardAdded = output<void>();
 	canceledBboardAdded = output<void>();
 
@@ -43,7 +42,7 @@ export class BoardForm {
 				next: () => {
 					this.resetForm();
 					this.error.set(null);
-					this.router.navigate(['/projects']);
+					this.router.navigate(['/projects', this.projectId]);
 				},
 				error: (response: HttpErrorResponse) => {
 					const errorObject = response.error.error;
