@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoardForm } from './board-form';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../services/project-service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('BoardForm', () => {
 	let fixture: ComponentFixture<BoardForm>;
@@ -79,5 +79,35 @@ describe('BoardForm', () => {
 		await fixture.whenStable();
 
 		expect(projectServiceMock.createBoard).not.toHaveBeenCalled();
+	});
+
+	it('should set error when creating board fails', async () => {
+		projectServiceMock.createBoard.mockReturnValue(throwError(() => ({
+			error: {
+				error: {
+					code: 'ERROR_MESSAGE',
+					message: 'Error message'
+				}
+			}
+		})));
+
+		await createComponent();
+
+		component.boardModel.set({ name: 'ERROR NAME' });
+
+		await component.onSubmit(new Event('submit'));
+
+		expect(component.error()).not.toBe('');
+	});
+
+	it('should navigate to /projects/projectId on cancel', async () => {
+		await createComponent();
+
+		const router = TestBed.inject(Router);
+		const navigateSpy = vi.spyOn(router, 'navigate');
+
+		component.onCancel();
+
+		expect(navigateSpy).toHaveBeenCalledWith(['/projects', 1]);
 	});
 });

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardUpdateForm } from './board-update-form';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { BoardService } from '../services/board-service';
 
@@ -69,7 +69,7 @@ describe('BoardUpdateForm', () => {
 	});
 
 	it('loads board on init', async () => {
-		await createComponent(true);
+		await createComponent();
 
 		expect(boardServiceMock.getBoard).toHaveBeenCalledWith(1);
 	});
@@ -86,9 +86,7 @@ describe('BoardUpdateForm', () => {
 		const router = TestBed.inject(Router);
 		const navigateSpy = vi.spyOn(router, 'navigate');
 
-		component.boardModel.set({
-			name: 'Updated A',
-		});
+		component.boardModel.set({ name: 'Updated A' });
 
 		await component.onSubmit(new Event('submit'));
 
@@ -100,7 +98,7 @@ describe('BoardUpdateForm', () => {
 	it('should not update board when invalid form data', async () => {
 		await createComponent();
 
-		component.resetForm();
+		component.resetForm(); //Clear name loaded from fetch
 
 		await component.onSubmit(new Event('submit'));
 
@@ -109,7 +107,26 @@ describe('BoardUpdateForm', () => {
 		expect(boardServiceMock.updateBoard).not.toHaveBeenCalled();
 	});
 
-	it('should navigate back on cancel', async () => {
+	it('should set error when updating board fails', async () => {
+		boardServiceMock.updateBoard.mockReturnValue(throwError(() => ({
+			error: {
+				error: {
+					code: 'ERROR_MESSAGE',
+					message: 'Error message'
+				}
+			}
+		})));
+
+		await createComponent();
+
+		component.boardModel.set({ name: 'ERROR NAME' });
+
+		await component.onSubmit(new Event('submit'));
+
+		expect(component.error()).not.toBe('');
+	});
+
+	it('should navigate to /projects/projectId on cancel', async () => {
 		await createComponent();
 
 		const router = TestBed.inject(Router);
