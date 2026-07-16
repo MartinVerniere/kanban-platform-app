@@ -24,8 +24,7 @@ export class ProjectDetails {
 		this.project.reload();
 	}
 
-	async onRemoveMember(userId: number) {
-		await firstValueFrom(this.projectService.removeMember(this.projectId, userId));
+	async onMemberRemoved() {
 		this.project.reload();
 	}
 }

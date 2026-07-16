@@ -1,6 +1,8 @@
-import { Component, computed, input, output, signal } from '@angular/core';
-import { Project } from '../services/project-service';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Project, ProjectService } from '../services/project-service';
 import { MemberForm } from '../member-form/member-form';
+import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 	selector: 'app-member-list',
@@ -10,6 +12,7 @@ import { MemberForm } from '../member-form/member-form';
 })
 export class MemberList {
 	project = input.required<Project>();
+	projectService = inject(ProjectService);
 
 	members = computed(() => this.project().members);
 
@@ -17,6 +20,7 @@ export class MemberList {
 	memberRemoved = output<number>();
 
 	addMemberFormEnabled = signal<boolean>(false);
+	error = signal<string | null>(null);
 
 	onEnableAddMember() { this.addMemberFormEnabled.set(true); }
 	onCancelAddMember() { this.addMemberFormEnabled.set(false); }
@@ -26,7 +30,17 @@ export class MemberList {
 		this.memberAdded.emit();
 	}
 
-	onRemoveMember(userId: number) {
-		this.memberRemoved.emit(userId);
+	async onRemoveMember(userId: number) {
+		this.projectService.removeMember(this.project().id, userId).subscribe({
+			next: () => {
+				this.memberRemoved.emit(userId);
+				this.error.set(null);
+			},
+			error: (response: HttpErrorResponse) => {
+				const errorObject = response.error.error;
+				console.log(errorObject);
+				this.error.set(errorObject.message);
+			}
+		});
 	}
 }
