@@ -1,12 +1,10 @@
-# Task Manager Full Stack
+# Project Management Platform
 
-A full-stack task management application built to practice modern web development with Angular and Node.js.
+A full-stack Agile project management application inspired by Jira's issue tracking workflows and Kanban boards. Built with Angular, Node.js, Express, and TypeScript to practice modern full-stack development.
 
 ## Purpose
 
-The goal of this project is to learn full-stack development by building a project incrementally, implementing one feature at a time from backend to frontend.
-
-Inspired by applications like Trello and Jira.
+The goal of this project is to learn full-stack development by building a production-style application incrementally, implementing features from backend APIs to frontend interfaces.
 
 ## Tech Stack
 
@@ -21,15 +19,20 @@ Inspired by applications like Trello and Jira.
 * Express
 * TypeScript
 
-### Features
+## Features
 
-* Authentication
+### Project Management
+
 * Workspaces
 * Projects
 * Boards
 * Columns
 * Cards
 * Drag & Drop
+
+### Collaboration
+
+* Authentication
 * Comments
 * Labels
 * User assignments

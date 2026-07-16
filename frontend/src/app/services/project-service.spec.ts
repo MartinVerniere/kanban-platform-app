@@ -160,6 +160,30 @@ describe('ProjectService', () => {
 		request.flush({});
 	});
 
+	it('should get boards from project', () => {
+		service.getBoards(projectA.id).subscribe();
+
+		const request = httpMock.expectOne(`http://localhost:3000/api/projects/${projectA.id}/boards`);
+
+		expect(request.request.method).toBe('GET');
+
+		request.flush({});
+	});
+
+	it('should create board', () => {
+		const board = {
+			name: "Board A"
+		}
+
+		service.createBoard(projectA.id, board).subscribe();
+
+		const request = httpMock.expectOne(`http://localhost:3000/api/projects/${projectA.id}/boards`);
+
+		expect(request.request.method).toBe('POST');
+
+		request.flush({});
+	});
+
 	afterEach(() => {
 		httpMock.verify();
 	});

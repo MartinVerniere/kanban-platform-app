@@ -5,6 +5,7 @@ import authRouter from './controllers/auth.js';
 import { ApiError, errorHandler, loggerMiddleware } from './utils/middleware.js';
 import projectRouter from './controllers/project.js';
 import userRouter from './controllers/user.js';
+import boardRouter from './controllers/board.js';
 
 export const app = express();
 
@@ -17,6 +18,7 @@ app.get('/health', (_req, res) => { res.status(200).json({ status: 'ok' }); });
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/projects', projectRouter);
+app.use('/api/boards', boardRouter);
 app.use((_request, _response) => { throw new ApiError(404, "ROUTE_NOT_FOUND", "Route not found."); });
 
 app.use(errorHandler);

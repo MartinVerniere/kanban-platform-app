@@ -10,10 +10,8 @@ describe('ProjectDetails', () => {
 	let component: ProjectDetails;
 	let html: HTMLElement;
 
-	const projectServiceMock = {
-		getProject: vi.fn(),
-		removeMember: vi.fn()
-	};
+	const projectServiceMock = { getProject: vi.fn() };
+
 	const activatedRouteMock = {
 		snapshot: {
 			paramMap: {
@@ -56,7 +54,6 @@ describe('ProjectDetails', () => {
 		vi.clearAllMocks();
 
 		projectServiceMock.getProject.mockReturnValue(of(project));
-		projectServiceMock.removeMember.mockReturnValue(of({}));
 
 		await TestBed.configureTestingModule({
 			imports: [ProjectDetails],
@@ -96,45 +93,23 @@ describe('ProjectDetails', () => {
 		expect(html.textContent).toContain('Error loading project');
 	});
 
-	it('should enable add member form', async () => {
-		await createComponent();
-
-		component.onEnableAddMember();
-
-		expect(component.addMemberFormEnabled).toBe(true);
-	});
-
-	it('should disable add member form on cancel', async () => {
-		await createComponent();
-
-		component.addMemberFormEnabled = true;
-
-		component.onCancelAddMember();
-
-		expect(component.addMemberFormEnabled).toBe(false);
-	});
-
 	it('should reload project after member added', async () => {
 		await createComponent();
 
 		const reloadSpy = vi.spyOn(component.project, 'reload');
 
-		component.addMemberFormEnabled = true;
-
 		await component.onMemberAdded();
 
 		expect(reloadSpy).toHaveBeenCalled();
-		expect(component.addMemberFormEnabled).toBe(false);
 	});
 
-	it('should remove member and reload project', async () => {
+	it('should reload project after member removed', async () => {
 		await createComponent();
 
 		const reloadSpy = vi.spyOn(component.project, 'reload');
 
-		await component.onRemoveMember(new Event('click'), 10);
+		await component.onMemberRemoved();
 
-		expect(projectServiceMock.removeMember).toHaveBeenCalledWith(1, 10);
 		expect(reloadSpy).toHaveBeenCalled();
 	});
 });

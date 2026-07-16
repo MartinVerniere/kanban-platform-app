@@ -6,6 +6,8 @@ import { authGuard } from './auth.guard';
 import { ProjectList } from './project-list/project-list';
 import { ProjectDetails } from './project-details/project-details';
 import { ProjectForm } from './project-form/project-form';
+import { BoardForm } from './board-form/board-form';
+import { BoardUpdateForm } from './board-update-form/board-update-form';
 
 export const routes: Routes = [
 	{
@@ -32,5 +34,13 @@ export const routes: Routes = [
 	{
 		path: 'projects/:id',
 		component: ProjectDetails
+	},
+	{
+		path: 'projects/:id/boards/create',
+		component: BoardForm,
+	},
+	{
+		path: 'projects/:projectId/boards/:boardId/edit',
+		component: BoardUpdateForm
 	}
 ];

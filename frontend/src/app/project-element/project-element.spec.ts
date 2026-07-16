@@ -2,17 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectElement } from './project-element';
 import { provideRouter } from '@angular/router';
-import { ProjectService } from '../services/project-service';
 
 describe('ProjectElement', () => {
 	let fixture: ComponentFixture<ProjectElement>;
 	let component: ProjectElement;
 	let html: HTMLElement;
-
-	const projectServiceMock = {
-		getProjects: vi.fn(),
-		deleteProject: vi.fn()
-	};
 
 	const project = {
 		id: 1,
@@ -42,10 +36,6 @@ describe('ProjectElement', () => {
 		await TestBed.configureTestingModule({
 			imports: [ProjectElement],
 			providers: [
-				{
-					provide: ProjectService,
-					useValue: projectServiceMock
-				},
 				provideRouter([])
 			]
 		}).compileComponents();

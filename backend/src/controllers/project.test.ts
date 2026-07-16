@@ -11,7 +11,7 @@ describe('Project API', () => {
 		await clearDatabase();
 	});
 
-	describe('when users exists in database', () => {
+	describe('when at least one user exists in database', () => {
 		let johnUserId: number;
 		let aliceUserId: number;
 
@@ -394,7 +394,87 @@ describe('Project API', () => {
 					});
 				});
 
-				describe('if project has multiple members', () => {
+				describe('on add board to project', () => {
+					it('adds board', async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ name: "Board A" });
+
+						expect(response.status).toBe(201);
+						expect(response.body.name).toBe("Board A");
+					});
+
+					it('returns 400 when invalid project id', async () => {
+						const response = await request(app)
+							.post(`/api/projects/abc/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ name: "Board A" });
+
+						expect(response.status).toBe(400);
+						expect(response.body.error.message).toBe("Invalid project id.");
+					});
+
+					it('returns 404 when project not found', async () => {
+						const response = await request(app)
+							.post(`/api/projects/9999/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ name: "Board A" });
+
+						expect(response.status).toBe(404);
+						expect(response.body.error.message).toBe("Project not found.");
+					});
+
+					it('returns 400 when missing field name in request', async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({});
+
+						expect(response.status).toBe(400);
+						expect(response.body.error.message).toBe("Board name is required.");
+					});
+
+					it('returns 400 when field name is invalid', async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ name: 5 });
+
+						expect(response.status).toBe(400);
+						expect(response.body.error.message).toBe("Board name must be a string.");
+					});
+
+					it('returns 400 when name is empty string', async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ name: "" });
+
+						expect(response.status).toBe(400);
+						expect(response.body.error.message).toBe("Board name is required.");
+					});
+
+					it('returns 401 if token is invalid', async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+							.set('Authorization', `Bearer INVALID_TOKEN`)
+							.send({ name: "Updated Board A" });
+
+						expect(response.status).toBe(401);
+						expect(response.body.error.message).toBe("Authentication token is invalid.");
+					});
+
+					it('returns 401 if token is missing', async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+
+						expect(response.status).toBe(401);
+						expect(response.body.error.message).toBe("Authentication token is missing.");
+					});
+				});
+
+				describe('if project has at least 2 members', () => {
 					beforeEach(async () => {
 						await request(app)
 							.post(`/api/projects/${firstProjectId}/members`)
@@ -586,7 +666,148 @@ describe('Project API', () => {
 						});
 					});
 				});
-			})
+
+				describe('and non-MEMBER is logged in', () => {
+					beforeEach(async () => {
+						const response = await request(app)
+							.post('/api/auth/login')
+							.send({
+								username: 'alice',
+								password: 'password123',
+							});
+
+						authToken = response.body.token;
+					});
+
+					describe('on get boards in project', () => {
+						it('returns 403 when user is not a member of the project', async () => {
+							const response = await request(app)
+								.get(`/api/projects/${firstProjectId}/boards`)
+								.set('Authorization', `Bearer ${authToken}`);
+
+							expect(response.status).toBe(403);
+							expect(response.body.error.message).toBe('You do not have access to this project.');
+						});
+					});
+
+					describe('on add board to project', () => {
+						it('returns 403 when user is not a member of the project', async () => {
+							const response = await request(app)
+								.post(`/api/projects/${firstProjectId}/boards`)
+								.set('Authorization', `Bearer ${authToken}`)
+								.send({ name: "Board A" });
+
+							expect(response.status).toBe(403);
+							expect(response.body.error.message).toBe("You do not have access to this project.");
+						});
+					});
+				});
+
+				describe('and project has at least one non-ADMIN member', () => {
+					beforeEach(async () => {
+						await request(app)
+							.post(`/api/projects/${firstProjectId}/members`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ userId: aliceUserId });
+					});
+
+					describe('and non-ADMIN member is logged in', () => {
+						beforeEach(async () => {
+							const response = await request(app)
+								.post('/api/auth/login')
+								.send({
+									username: 'alice',
+									password: 'password123',
+								});
+
+							authToken = response.body.token;
+						});
+
+						describe('on add board to project', () => {
+							it('returns 403 when user is not an admin of the project', async () => {
+								const response = await request(app)
+									.post(`/api/projects/${firstProjectId}/boards`)
+									.set('Authorization', `Bearer ${authToken}`)
+									.send({ name: "Board A" });
+
+								expect(response.status).toBe(403);
+								expect(response.body.error.message).toBe("You must be a project admin to perform this action.");
+							});
+						});
+					});
+				});
+
+				describe('and one of the projects created has at least one board', () => {
+					let boardId: number;
+
+					beforeEach(async () => {
+						const response = await request(app)
+							.post(`/api/projects/${firstProjectId}/boards`)
+							.set('Authorization', `Bearer ${authToken}`)
+							.send({ name: 'Board A' });
+
+						boardId = response.body.id;
+					});
+
+					describe('on add board to post', () => {
+						it('returns 409 when a board with that name already exists in project', async () => {
+							const response = await request(app)
+								.post(`/api/projects/${firstProjectId}/boards`)
+								.set('Authorization', `Bearer ${authToken}`)
+								.send({ name: "Board A" });
+
+							expect(response.status).toBe(409);
+							expect(response.body.error.message).toBe('A board with this name already exists in the project.');
+						});
+					});
+
+					describe('on get boards in project', () => {
+						it('gets boards', async () => {
+							const response = await request(app)
+								.get(`/api/projects/${firstProjectId}/boards`)
+								.set('Authorization', `Bearer ${authToken}`);
+
+							expect(response.status).toBe(200);
+							expect(response.body).toHaveLength(1);
+						});
+
+						it('returns 400 when invalid project id', async () => {
+							const response = await request(app)
+								.get(`/api/projects/abc/boards`)
+								.set('Authorization', `Bearer ${authToken}`);
+
+							expect(response.status).toBe(400);
+							expect(response.body.error.message).toBe('Invalid project id.');
+						});
+
+						it('returns 404 when project not found', async () => {
+							const response = await request(app)
+								.get(`/api/projects/9999/boards`)
+								.set('Authorization', `Bearer ${authToken}`);
+
+							expect(response.status).toBe(404);
+							expect(response.body.error.message).toBe('Project not found.');
+						});
+
+						it('returns 401 if token is invalid', async () => {
+							const response = await request(app)
+								.get(`/api/projects/${firstProjectId}/boards`)
+								.set('Authorization', `Bearer INVALID_TOKEN`);
+
+							expect(response.status).toBe(401);
+							expect(response.body.error.message).toBe("Authentication token is invalid.");
+						});
+
+						it('returns 401 if token is missing', async () => {
+							const response = await request(app)
+								.get(`/api/projects/${firstProjectId}/boards`);
+
+							expect(response.status).toBe(401);
+							expect(response.body.error.message).toBe("Authentication token is missing.");
+						});
+					});
+				});
+			});
 
 			describe('and the user has not created projects', () => {
 				describe('on get projects', () => {
