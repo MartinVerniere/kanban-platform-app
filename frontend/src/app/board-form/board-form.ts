@@ -54,7 +54,7 @@ export class BoardForm {
 	}
 
 	onCancel() {
-		this.router.navigate(['/projects']);
+		this.router.navigate(['/projects', this.projectId]);
 	}
 
 	resetForm() {
