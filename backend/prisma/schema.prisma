@@ -61,8 +61,25 @@ model Board {
 	projectId Int
 	project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+	columns    BoardColumn[]
+
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 
 	@@unique([projectId, name])
+}
+
+model BoardColumn {
+	id		 Int 	   @id @default(autoincrement())
+	name     String
+	order    Int
+
+	boardId  Int
+	board    Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	@@unique([boardId, name])
+	@@unique([boardId, order])
 }
