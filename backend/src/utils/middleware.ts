@@ -157,7 +157,16 @@ export const boardExtractor = async (
 	const requestBoardId = Number(request.params.id);
 	if (!Number.isInteger(requestBoardId)) throw new ApiError(400, "INVALID_BOARD_ID", "Invalid board id.");
 
-	const board = await prisma.board.findUnique({ where: { id: requestBoardId } });
+	const board = await prisma.board.findUnique({
+		where: { id: requestBoardId },
+		include: {
+			columns: {
+				orderBy: {
+					order: "asc"
+				}
+			}
+		}
+	});
 	if (!board) throw new ApiError(404, "BOARD_NOT_FOUND", "Board not found.");
 
 	request.board = board;
