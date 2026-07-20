@@ -94,7 +94,7 @@ describe('BoardList', () => {
 		expect(html.textContent).toContain('Error loading boards');
 	});
 
-	it('should delete project and reload list', async () => {
+	it('should delete board and reload list', async () => {
 		projectServiceMock.getBoards.mockReturnValue(of(boards));
 		boardServiceMock.deleteBoard.mockReturnValue(of({}));
 
