@@ -12,7 +12,7 @@ boardColumnRouter.get('/:id',
 	async (request: Request, response: Response) => {
 		const boardColumn = request.boardColumn!;
 
-		return boardColumn;
+		return response.status(200).json(boardColumn);
 	}
 );
 
@@ -33,7 +33,7 @@ boardColumnRouter.put('/:id',
 		const boardColumnExists = await prisma.boardColumn.findUnique({
 			where: { boardId_name: { boardId: boardColumn.boardId, name } }
 		});
-		if (boardColumnExists) throw new ApiError(409, "BOARD_EXISTS", "A board with this name already exists in the project.");
+		if (boardColumnExists) throw new ApiError(409, "BOARD_COLUMN_EXISTS", "A column with this name already exists in the board.");
 
 		const updatedBoardColumn = await prisma.boardColumn.update({ where: { id: boardColumn.id }, data: { name } });
 

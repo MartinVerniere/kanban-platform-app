@@ -212,10 +212,10 @@ export const columnExtractor = async (
 	next: NextFunction
 ): Promise<void> => {
 	const requestBoardColumnId = Number(request.params.id);
-	if (!Number.isInteger(requestBoardColumnId)) throw new ApiError(400, "INVALID_BOARD_COLUMN_ID", "Invalid board column id.");
+	if (!Number.isInteger(requestBoardColumnId)) throw new ApiError(400, "INVALID_BOARD_COLUMN_ID", "Invalid column id.");
 
 	const boardColumn = await prisma.boardColumn.findUnique({ where: { id: requestBoardColumnId } });
-	if (!boardColumn) throw new ApiError(404, "BOARD_COLUMN_NOT_FOUND", "Board column not found.");
+	if (!boardColumn) throw new ApiError(404, "BOARD_COLUMN_NOT_FOUND", "Column not found.");
 
 	request.boardColumn = boardColumn;
 

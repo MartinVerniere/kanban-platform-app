@@ -56,7 +56,7 @@ boardRouter.post("/:id/columns",
 		const boardColumnExists = await prisma.boardColumn.findUnique({
 			where: { boardId_name: { boardId: board.id, name } }
 		});
-		if (boardColumnExists) throw new ApiError(409, "BOARD_EXISTS", "A board with this name already exists in the project.");
+		if (boardColumnExists) throw new ApiError(409, "BOARD_COLUMN_EXISTS", "A column with this name already exists in the board.");
 
 		const allBoardColumns = await prisma.boardColumn.findMany({ where: { boardId: board.id } })!;
 		const order = allBoardColumns.length; // Place it at end of board column list
@@ -75,24 +75,24 @@ boardRouter.put("/:id/columns/order",
 	requireBoardProjectAdminRole,
 	async (request: Request, response: Response) => {
 		const board = request.board!;
-		const { columns } = request.body;
+		const { columnOrder } = request.body;
 
-		if (!columns) throw new ApiError(400, "COLUMN_ORDER_REQUIRED", "Column order is required.");
-		if (!Array.isArray(columns)) throw new ApiError(400, "INVALID_COLUMN_ORDER", "Column order must be an array.");
+		if (!columnOrder) throw new ApiError(400, "COLUMN_ORDER_REQUIRED", "Column order is required.");
+		if (!Array.isArray(columnOrder)) throw new ApiError(400, "INVALID_COLUMN_ORDER", "Column order must be an array.");
 
 		const boardColumns = await prisma.boardColumn.findMany({ where: { boardId: board.id }, select: { id: true } });
 		const boardColumnIds = new Set(boardColumns.map(c => c.id));
 
-		if (columns.length !== boardColumns.length) throw new ApiError(400, "INVALID_COLUMN_ORDER", "Every board column must be included.");
+		if (columnOrder.length !== boardColumns.length) throw new ApiError(400, "INVALID_COLUMN_ORDER", "Every board column must be included.");
 
-		for (const column of columns) {
+		for (const column of columnOrder) {
 			if (!Number.isInteger(column.id)) throw new ApiError(400, "INVALID_COLUMN_ID", "Invalid column id.");
 			if (!Number.isInteger(column.order)) throw new ApiError(400, "INVALID_COLUMN_ORDER", "Invalid column order.");
 			if (!boardColumnIds.has(column.id)) throw new ApiError(400, "INVALID_COLUMN", "Column does not belong to this board.");
 		}
 
 		await prisma.$transaction(
-			columns.map(column =>
+			columnOrder.map(column =>
 				prisma.boardColumn.update({
 					where: { id: column.id },
 					data: { order: column.order },
@@ -111,7 +111,7 @@ boardRouter.put("/:id/columns/order",
 			}
 		});
 
-		return response.status(204).json(updatedBoard);
+		return response.status(200).json(updatedBoard);
 	}
 );
 
