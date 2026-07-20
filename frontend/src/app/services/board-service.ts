@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BoardModel } from '../board-form/board-form';
 import { Column } from '../column-list/column-list';
+import { ColumnModel } from '../column-form/column-form';
 
 const API_URL = 'http://localhost:3000/api/boards';
 
@@ -26,5 +27,9 @@ export class BoardService {
 
 	deleteBoard(boardId: number): Observable<void> {
 		return this.http.delete<void>(`${API_URL}/${boardId}`);
+	}
+
+	createColumn(boardId: number, request: ColumnModel): Observable<Board> {
+		return this.http.post<Board>(`${API_URL}/${boardId}/columns`, request);
 	}
 }

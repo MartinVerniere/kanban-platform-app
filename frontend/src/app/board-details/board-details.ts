@@ -1,12 +1,12 @@
 import { Component, inject, input, resource } from '@angular/core';
 import { Board, BoardService } from '../services/board-service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ColumnList } from '../column-list/column-list';
 
 @Component({
 	selector: 'app-board-details',
-	imports: [ColumnList],
+	imports: [ColumnList, RouterLink],
 	templateUrl: './board-details.html',
 	styleUrl: './board-details.css',
 })
