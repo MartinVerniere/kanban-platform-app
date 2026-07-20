@@ -13,8 +13,7 @@ export class BoardElement {
 	projectId = input.required<number>();
 	boardDeleted = output<number>();
 
-	onBoardDeleted(event: Event, boardId: number) {
-		event.preventDefault();
+	onBoardDeleted(boardId: number) {
 		this.boardDeleted.emit(boardId);
 	}
 }

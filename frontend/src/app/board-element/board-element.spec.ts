@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardElement } from './board-element';
+import { provideRouter } from '@angular/router';
 
 describe('BoardElement', () => {
 	let fixture: ComponentFixture<BoardElement>;
@@ -35,7 +36,9 @@ describe('BoardElement', () => {
 
 		await TestBed.configureTestingModule({
 			imports: [BoardElement],
-			providers: []
+			providers: [
+				provideRouter([])
+			]
 		}).compileComponents();
 	});
 
@@ -49,5 +52,15 @@ describe('BoardElement', () => {
 		await createComponent();
 
 		expect(html.textContent).toContain('Board A');
+	});
+
+	it('should emit boardDeleted on clicking "Delete" button', async () => {
+		await createComponent();
+
+		const emitSpy = vi.spyOn(component.boardDeleted, 'emit');
+
+		component.onBoardDeleted(1);
+
+		expect(emitSpy).toHaveBeenCalledWith(1);
 	});
 });
