@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BoardModel } from '../board-form/board-form';
+import { Column } from '../column-list/column-list';
 
 const API_URL = 'http://localhost:3000/api/boards';
 
 export interface Board {
 	id: number,
 	name: string,
+	columns: Column[]
 }
 
 @Service()

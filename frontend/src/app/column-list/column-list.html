@@ -1,0 +1,14 @@
+<div class="column-list">
+	@for (column of columnList(); track column.id) {
+	<div class="column">
+		<div class="column-id">Id: {{column.id}}</div>
+		<div class="column-name">Name: {{column.name}}</div>
+		<button type="button" (click)="onRemoveColumn(column.id)">Delete</button>
+	</div>
+	} @empty {
+	<div class="column-list-empty">No columns in this project</div>
+	}
+	<button [routerLink]="['/projects', projectId(), 'boards', boardId(), 'columns', 'create']">
+		Create new board
+	</button>
+</div>

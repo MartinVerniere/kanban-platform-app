@@ -47,5 +47,9 @@ export const routes: Routes = [
 	{
 		path: 'projects/:projectId/boards/:boardId/edit',
 		component: BoardUpdateForm
+	},
+	{
+		path: 'projects/:projectId/boards/:boardId/columns/create',
+		component: BoardUpdateForm
 	}
 ];

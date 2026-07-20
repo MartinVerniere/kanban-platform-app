@@ -4,7 +4,10 @@
 	} @else if (board.error()) {
 	<div class="error">Error loading board</div>
 	} @else {
-	<h2 class="board-name">Name: {{board.value()?.name}}</h2>
+	@if (board.value(); as board) {
+	<h2 class="board-name">Name: {{board.name}}</h2>
+	<app-column-list [columnList]="board.columns" [projectId]="projectId" [boardId]="boardId"></app-column-list>
+	}
 	}
 	<button routerLink="/boards">Go back</button>
 </div>
