@@ -20,7 +20,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/projects', projectRouter);
 app.use('/api/boards', boardRouter);
-app.use('api/columns', boardColumnRouter)
+app.use('/api/columns', boardColumnRouter)
 app.use((_request, _response) => { throw new ApiError(404, "ROUTE_NOT_FOUND", "Route not found."); });
 
 app.use(errorHandler);
