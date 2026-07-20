@@ -1,0 +1,10 @@
+<div class="board-element">
+	@if (board.isLoading()) {
+	<div class="loading">Loading...</div>
+	} @else if (board.error()) {
+	<div class="error">Error loading board</div>
+	} @else {
+	<h2 class="board-name">Name: {{board.value()?.name}}</h2>
+	}
+	<button routerLink="/boards">Go back</button>
+</div>
