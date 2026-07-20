@@ -1,5 +1,6 @@
 <div class="board-element">
 	<div class="board-name">{{board().name}}</div>
+	<button [routerLink]="['/projects', projectId(), 'boards', board().id]">Details</button>
 	<button [routerLink]="['/projects', projectId(), 'boards', board().id, 'edit']">Update</button>
 	<button type="button" (click)="onBoardDeleted($event, board().id)">Delete</button>
 </div>
