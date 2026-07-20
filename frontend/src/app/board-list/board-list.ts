@@ -19,9 +19,7 @@ export class BoardList {
 
 	boardList = resource({ loader: () => firstValueFrom(this.projectService.getBoards(this.projectId())) });
 
-	async onDeleteBoard(event: Event, boardId: number): Promise<void> {
-		event.preventDefault();
-
+	async onDeleteBoard(boardId: number): Promise<void> {
 		await firstValueFrom(this.boardService.deleteBoard(boardId));
 		this.boardList.reload();
 	}
