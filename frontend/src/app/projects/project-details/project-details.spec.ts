@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectDetails } from './project-details';
 import { ActivatedRoute } from '@angular/router';
-import { ProjectService } from '../services/project-service';
+import { ProjectService } from '../../services/project-service';
 import { NEVER, of, throwError } from 'rxjs';
 
 describe('ProjectDetails', () => {

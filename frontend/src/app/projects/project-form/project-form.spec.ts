@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectForm } from './project-form';
 import { Router, provideRouter } from '@angular/router';
-import { ProjectService } from '../services/project-service';
+import { ProjectService } from '../../services/project-service';
 import { of } from 'rxjs';
 
 describe('ProjectForm', () => {
