@@ -15,9 +15,8 @@ export class ColumnElement {
 	route = inject(ActivatedRoute);
 
 	column = input.required<Column>();
-
-	projectId = Number(this.route.snapshot.paramMap.get('projectId'));
-	boardId = Number(this.route.snapshot.paramMap.get('boardId'));
+	projectId = input.required<number>();
+	boardId = input.required<number>();
 
 	columnDeleted = output<void>();
 

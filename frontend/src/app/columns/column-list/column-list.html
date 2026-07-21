@@ -1,6 +1,7 @@
 <div class="column-list">
+	<h3 class="column-title">Columns</h3>
 	@for (column of columnList(); track column.id) {
-	<app-column-element [column]="column" (columnDeleted)="onRemoveColumn()"></app-column-element>
+	<app-column-element [column]="column" [projectId]="projectId" [boardId]="boardId" (columnDeleted)="onRemoveColumn()"></app-column-element>
 	} @empty {
 	<div class="column-list-empty">No columns in this project</div>
 	}
