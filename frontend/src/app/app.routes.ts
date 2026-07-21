@@ -10,6 +10,7 @@ import { BoardForm } from './board-form/board-form';
 import { BoardUpdateForm } from './board-update-form/board-update-form';
 import { BoardDetails } from './board-details/board-details';
 import { ColumnForm } from './column-form/column-form';
+import { ColumnUpdateForm } from './column-update-form/column-update-form';
 
 export const routes: Routes = [
 	{
@@ -52,5 +53,9 @@ export const routes: Routes = [
 	{
 		path: 'projects/:projectId/boards/:boardId/columns/create',
 		component: ColumnForm
+	},
+	{
+		path: 'projects/:projectId/boards/:boardId/columns/:columnId/edit',
+		component: ColumnUpdateForm
 	}
 ];
