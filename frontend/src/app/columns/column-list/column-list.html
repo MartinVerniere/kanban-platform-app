@@ -1,7 +1,10 @@
 <div class="column-list">
 	<h3 class="column-title">Columns</h3>
-	@for (column of columnList(); track column.id) {
-	<app-column-element [column]="column" [projectId]="projectId" [boardId]="boardId" (columnDeleted)="onRemoveColumn()"></app-column-element>
+	@for (column of columnList(); track column.id; let i = $index) {
+	<app-column-element [column]="column" [projectId]="projectId" [boardId]="boardId" [isFirst]="i === 0"
+		[isLast]="i === columnList().length - 1" (moveLeft)="onMoveLeft($event)" (moveRight)="onMoveRight($event)"
+		(columnDeleted)="onRemoveColumn()">
+	</app-column-element>
 	} @empty {
 	<div class="column-list-empty">No columns in this project</div>
 	}

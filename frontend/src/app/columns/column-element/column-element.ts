@@ -17,8 +17,13 @@ export class ColumnElement {
 	column = input.required<Column>();
 	projectId = input.required<number>();
 	boardId = input.required<number>();
+	
+	isFirst = input<boolean>();
+	isLast = input<boolean>();
 
 	columnDeleted = output<void>();
+	moveLeft = output<number>();
+	moveRight = output<number>();
 
 	error = signal<string | null>(null);
 

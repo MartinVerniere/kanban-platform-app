@@ -22,4 +22,8 @@ export class BoardDetails {
 	async onDeleteColumn() {
 		this.board.reload();
 	}
+
+	async onMovedColumn() {
+		this.board.reload();
+	}
 }

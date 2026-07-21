@@ -13,6 +13,15 @@ export interface Board {
 	columns: Column[]
 }
 
+interface ColumnOrder {
+	id: number,
+	order: number
+}
+
+export interface ColumnOrderRequest {
+	columnOrder: ColumnOrder[]
+}
+
 @Service()
 export class BoardService {
 	private http = inject(HttpClient);
@@ -31,5 +40,9 @@ export class BoardService {
 
 	createColumn(boardId: number, request: ColumnModel): Observable<Board> {
 		return this.http.post<Board>(`${API_URL}/${boardId}/columns`, request);
+	}
+
+	changeColumnOrder(boardId: number, request: ColumnOrderRequest): Observable<Board> {
+		return this.http.put<Board>(`${API_URL}/${boardId}/columns/order`, request);
 	}
 }

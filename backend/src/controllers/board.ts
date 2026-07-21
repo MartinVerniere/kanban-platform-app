@@ -91,14 +91,27 @@ boardRouter.put("/:id/columns/order",
 			if (!boardColumnIds.has(column.id)) throw new ApiError(400, "INVALID_COLUMN", "Column does not belong to this board.");
 		}
 
-		await prisma.$transaction(
-			columnOrder.map(column =>
+		await prisma.$transaction([
+			// Need to do this step because if not then prisma throws error "Unique constraint failed on the fields: (`"boardId"`, `"order"`)""
+			// So I first order columns with negative values, and then order them correctly
+			...columnOrder.map(column =>
 				prisma.boardColumn.update({
 					where: { id: column.id },
-					data: { order: column.order },
+					data: {
+						order: -(column.order + 1),
+					},
 				})
-			)
-		);
+			),
+
+			...columnOrder.map(column =>
+				prisma.boardColumn.update({
+					where: { id: column.id },
+					data: {
+						order: column.order,
+					},
+				})
+			),
+		]);
 
 		const updatedBoard = await prisma.board.findUnique({
 			where: { id: board.id },
