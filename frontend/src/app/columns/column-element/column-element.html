@@ -1,6 +1,5 @@
 <div class="column-element">
 	@if (column(); as column) {
-
 	<div class="column-id">Id: {{column.id}}</div>
 	<div class="column-name">Name: {{column.name}}</div>
 	<div class="column-move-buttons">
@@ -8,6 +7,7 @@
 		<button type="button" [disabled]="isLast()" (click)="moveRight.emit(column.id)">Move right</button>
 	</div>
 	<div class="column-buttons">
+		<button [routerLink]="['/projects', projectId(), 'boards', boardId(), 'columns', column.id]">View</button>
 		<button
 			[routerLink]="['/projects', projectId(), 'boards', boardId(), 'columns', column.id, 'edit']">Edit</button>
 		<button type="button" (click)="onRemoveColumn(column.id)">Delete</button>
