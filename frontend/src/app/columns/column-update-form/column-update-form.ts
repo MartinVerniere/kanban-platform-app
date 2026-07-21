@@ -1,10 +1,10 @@
-import { Component, effect, inject, resource, signal } from '@angular/core';
-import { ColumnService } from '../../services/column-service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { ColumnModel } from '../column-form/column-form';
-import { HttpErrorResponse } from '@angular/common/http';
-import { form, FormField, required, submit } from '@angular/forms/signals';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, inject, resource, signal, effect } from "@angular/core";
+import { FormField, form, required, submit } from "@angular/forms/signals";
+import { Router, ActivatedRoute } from "@angular/router";
+import { firstValueFrom } from "rxjs";
+import { ColumnService } from "../../services/columns/column-service";
+import { ColumnModel } from "../column-form/column-form";
 
 @Component({
 	selector: 'app-column-update-form',

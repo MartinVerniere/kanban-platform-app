@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardList } from './board-list';
 import { NEVER, of, throwError } from 'rxjs';
-import { ProjectService } from '../services/project-service';
-import { BoardService } from '../services/board-service';
 import { provideRouter } from '@angular/router';
+import { BoardService } from '../../services/boards/board-service';
+import { ProjectService } from '../../services/projects/project-service';
 
 describe('BoardList', () => {
 	let fixture: ComponentFixture<BoardList>;

@@ -1,8 +1,8 @@
-import { Component, inject, input, resource } from '@angular/core';
-import { Board, BoardService } from '../services/board-service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { ColumnList } from '../column-list/column-list';
+import { Component, inject, resource } from "@angular/core";
+import { RouterLink, ActivatedRoute } from "@angular/router";
+import { firstValueFrom } from "rxjs";
+import { ColumnList } from "../../columns/column-list/column-list";
+import { BoardService } from "../../services/boards/board-service";
 
 @Component({
 	selector: 'app-board-details',

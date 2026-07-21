@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { AuthService } from '../services/auth-service';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../services/auth/auth-service';
 
 interface LoginModel {
 	username: string;

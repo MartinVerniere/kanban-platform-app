@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MemberForm } from './member-form';
 import { provideRouter } from '@angular/router';
-import { Project, ProjectService } from '../services/project-service';
-import { UserService } from '../services/user-service';
 import { of, throwError } from 'rxjs';
+import { Project, ProjectService } from '../../services/projects/project-service';
+import { UserService } from '../../services/users/user-service';
 
 describe('MemberForm', () => {
 	let fixture: ComponentFixture<MemberForm>;

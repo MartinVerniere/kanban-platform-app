@@ -1,6 +1,6 @@
-import { Component, input, output } from '@angular/core';
-import { Board } from '../services/board-service';
-import { RouterLink } from '@angular/router';
+import { Component, input, output } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { Board } from "../../services/boards/board-service";
 
 @Component({
 	selector: 'app-board-element',

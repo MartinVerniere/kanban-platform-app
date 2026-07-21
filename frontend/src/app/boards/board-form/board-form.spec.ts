@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardForm } from './board-form';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProjectService } from '../services/project-service';
 import { of, throwError } from 'rxjs';
+import { ProjectService } from '../../services/projects/project-service';
 
 describe('BoardForm', () => {
 	let fixture: ComponentFixture<BoardForm>;

@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
-import { AuthService } from '../services/auth-service';
 import { email, form, FormField, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../services/auth/auth-service';
 
 interface RegisterModel {
 	username: string;

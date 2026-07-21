@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MemberList } from './member-list';
-import { Project, ProjectService } from '../services/project-service';
 import { of } from 'rxjs';
+import { Project, ProjectService } from '../../services/projects/project-service';
 
 describe('MemberList', () => {
 	let fixture: ComponentFixture<MemberList>;

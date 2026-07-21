@@ -1,8 +1,7 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
-import { Project, ProjectService } from '../services/project-service';
-import { MemberForm } from '../member-form/member-form';
-import { firstValueFrom } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, input, inject, computed, output, signal } from "@angular/core";
+import { Project, ProjectService } from "../../services/projects/project-service";
+import { MemberForm } from "../member-form/member-form";
 
 @Component({
 	selector: 'app-member-list',

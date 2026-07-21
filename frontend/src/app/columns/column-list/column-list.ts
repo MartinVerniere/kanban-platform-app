@@ -1,7 +1,7 @@
-import { Component, inject, input, output, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Column } from '../../services/column-service';
-import { ColumnElement } from '../column-element/column-element';
+import { Component, inject, input, output, signal } from "@angular/core";
+import { RouterLink, Router, ActivatedRoute } from "@angular/router";
+import { Column } from "../../services/columns/column-service";
+import { ColumnElement } from "../column-element/column-element";
 
 @Component({
 	selector: 'app-column-list',

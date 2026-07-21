@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ColumnService } from './column-service';
 
 describe('ColumnService', () => {

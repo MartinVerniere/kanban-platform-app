@@ -1,9 +1,9 @@
-import { Component, inject, input, resource } from '@angular/core';
-import { ProjectService } from '../services/project-service';
-import { firstValueFrom } from 'rxjs';
-import { RouterLink } from '@angular/router';
-import { BoardElement } from '../board-element/board-element';
-import { BoardService } from '../services/board-service';
+import { Component, inject, input, resource } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { firstValueFrom } from "rxjs";
+import { BoardService } from "../../services/boards/board-service";
+import { ProjectService } from "../../services/projects/project-service";
+import { BoardElement } from "../board-element/board-element";
 
 @Component({
 	selector: 'app-board-list',

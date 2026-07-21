@@ -1,10 +1,10 @@
-import { Component, computed, inject, input, output, resource, signal } from '@angular/core';
-import { form, FormField, required, submit } from '@angular/forms/signals';
-import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { Project, ProjectService } from '../services/project-service';
-import { UserService } from '../services/user-service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, inject, input, output, resource, computed, signal } from "@angular/core";
+import { FormField, form, required, submit } from "@angular/forms/signals";
+import { Router } from "@angular/router";
+import { firstValueFrom } from "rxjs";
+import { ProjectService, Project } from "../../services/projects/project-service";
+import { UserService } from "../../services/users/user-service";
 
 export interface MemberModel {
 	userId: string;

@@ -1,7 +1,7 @@
-import { Component, inject, input, output, signal } from '@angular/core';
-import { Column, ColumnService } from '../../services/column-service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, inject, input, output, signal } from "@angular/core";
+import { RouterLink, Router, ActivatedRoute } from "@angular/router";
+import { ColumnService, Column } from "../../services/columns/column-service";
 
 @Component({
 	selector: 'app-column-element',

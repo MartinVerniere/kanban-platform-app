@@ -1,8 +1,8 @@
-import { Component, inject, output, signal } from '@angular/core';
-import { form, FormField, required, submit } from '@angular/forms/signals';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProjectService } from '../services/project-service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, inject, signal } from "@angular/core";
+import { FormField, form, required, submit } from "@angular/forms/signals";
+import { Router, ActivatedRoute } from "@angular/router";
+import { ProjectService } from "../../services/projects/project-service";
 
 export interface BoardModel {
 	name: string;

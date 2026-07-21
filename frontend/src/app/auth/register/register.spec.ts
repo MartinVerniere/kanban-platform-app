@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Register } from './register';
-import { AuthService } from '../services/auth-service';
 import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { AuthService } from '../../services/auth/auth-service';
 
 describe('Register', () => {
 	let fixture: ComponentFixture<Register>;

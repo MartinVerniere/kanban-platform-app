@@ -1,16 +1,16 @@
-import { Routes } from '@angular/router';
-import { Login } from './login/login';
-import { Home } from './home/home';
-import { Register } from './register/register';
-import { authGuard } from './auth.guard';
-import { ProjectList } from './projects/project-list/project-list';
-import { ProjectDetails } from './projects/project-details/project-details';
-import { ProjectForm } from './projects/project-form/project-form';
-import { BoardForm } from './board-form/board-form';
-import { BoardUpdateForm } from './board-update-form/board-update-form';
-import { BoardDetails } from './board-details/board-details';
-import { ColumnForm } from './columns/column-form/column-form';
-import { ColumnUpdateForm } from './columns/column-update-form/column-update-form';
+import { Routes } from "@angular/router";
+import { authGuard } from "./auth.guard";
+import { Login } from "./auth/login/login";
+import { Register } from "./auth/register/register";
+import { BoardDetails } from "./boards/board-details/board-details";
+import { BoardForm } from "./boards/board-form/board-form";
+import { BoardUpdateForm } from "./boards/board-update-form/board-update-form";
+import { ColumnForm } from "./columns/column-form/column-form";
+import { ColumnUpdateForm } from "./columns/column-update-form/column-update-form";
+import { Home } from "./home/home";
+import { ProjectDetails } from "./projects/project-details/project-details";
+import { ProjectForm } from "./projects/project-form/project-form";
+import { ProjectList } from "./projects/project-list/project-list";
 
 export const routes: Routes = [
 	{

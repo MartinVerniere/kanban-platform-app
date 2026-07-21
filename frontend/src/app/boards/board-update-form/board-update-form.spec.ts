@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardUpdateForm } from './board-update-form';
 import { of, throwError } from 'rxjs';
-import { ActivatedRoute, provideRouter, Router } from '@angular/router';
-import { BoardService } from '../services/board-service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BoardService } from '../../services/boards/board-service';
 
 describe('BoardUpdateForm', () => {
 	let fixture: ComponentFixture<BoardUpdateForm>;

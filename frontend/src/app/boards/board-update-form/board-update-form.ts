@@ -1,10 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, effect, inject, output, resource, signal } from '@angular/core';
-import { form, FormField, required, submit } from '@angular/forms/signals';
-import { Router, ActivatedRoute } from '@angular/router';
-import { BoardModel } from '../board-form/board-form';
-import { BoardService } from '../services/board-service';
-import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, inject, resource, signal, effect } from "@angular/core";
+import { FormField, form, required, submit } from "@angular/forms/signals";
+import { Router, ActivatedRoute } from "@angular/router";
+import { firstValueFrom } from "rxjs";
+import { BoardService } from "../../services/boards/board-service";
+import { BoardModel } from "../board-form/board-form";
 
 @Component({
 	selector: 'app-board-update-form',

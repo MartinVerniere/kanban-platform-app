@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BoardModel } from '../board-form/board-form';
-import { ColumnModel } from '../../columns/column-form/column-form';
-import { Column } from '../column-service';
+import { HttpClient } from "@angular/common/http";
+import { Service, inject } from "@angular/core";
+import { Observable } from "rxjs";
+import { BoardModel } from "../../boards/board-form/board-form";
+import { ColumnModel } from "../../columns/column-form/column-form";
+import { Column } from "../columns/column-service";
 
 const API_URL = 'http://localhost:3000/api/boards';
 
