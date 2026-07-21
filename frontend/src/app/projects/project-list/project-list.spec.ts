@@ -3,7 +3,7 @@ import { NEVER, of, throwError } from 'rxjs';
 import { provideRouter, Router } from '@angular/router';
 
 import { ProjectList } from './project-list';
-import { ProjectService } from '../../services/project-service';
+import { ProjectService } from '../../services/projects/project-service';
 
 describe('ProjectList', () => {
 	let fixture: ComponentFixture<ProjectList>;

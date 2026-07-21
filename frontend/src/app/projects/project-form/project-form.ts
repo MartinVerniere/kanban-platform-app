@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { ProjectService } from '../../services/project-service';
+import { ProjectService } from '../../services/projects/project-service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 export interface ProjectModel {

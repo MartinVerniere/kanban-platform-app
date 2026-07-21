@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ProjectModel } from '../projects/project-form/project-form';
-import { Board } from './board-service';
+import { ProjectModel } from '../../projects/project-form/project-form';
+import { Board } from '../boards/board-service';
 import { BoardModel } from '../board-form/board-form';
 
 const API_URL = 'http://localhost:3000/api/projects';

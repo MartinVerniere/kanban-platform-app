@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { BoardService } from './board-service';
+import { BoardService } from '../board-service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 

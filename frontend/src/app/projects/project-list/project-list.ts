@@ -2,7 +2,7 @@ import { Component, inject, resource } from '@angular/core';
 import { ProjectElement } from '../project-element/project-element';
 import { firstValueFrom } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { ProjectService } from '../../services/project-service';
+import { ProjectService } from '../../services/projects/project-service';
 
 @Component({
 	selector: 'app-project-list',

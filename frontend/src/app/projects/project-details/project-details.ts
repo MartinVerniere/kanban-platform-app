@@ -1,7 +1,7 @@
 import { Component, inject, resource } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { ProjectService } from '../../services/project-service';
+import { ProjectService } from '../../services/projects/project-service';
 import { MemberList } from '../../member-list/member-list';
 import { BoardList } from '../board-list/board-list';
 

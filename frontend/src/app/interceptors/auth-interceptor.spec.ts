@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpInterceptorFn, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './auth-interceptor';
 import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
-import { AuthService } from '../services/auth-service';
+import { AuthService } from '../services/auth/auth-service';
 
 describe('authInterceptor', () => {
 	const interceptor: HttpInterceptorFn = (request, next) => TestBed.runInInjectionContext(() => authInterceptor(request, next));

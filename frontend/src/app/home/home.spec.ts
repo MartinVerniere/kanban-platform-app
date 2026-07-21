@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Home } from './home';
-import { AuthService } from '../services/auth-service';
+import { AuthService } from '../services/auth/auth-service';
 import { provideRouter } from '@angular/router';
 
 describe('Home', () => {

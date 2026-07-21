@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { Project } from '../../services/project-service';
+import { Project } from '../../services/projects/project-service';
 import { RouterLink } from '@angular/router';
 
 @Component({
