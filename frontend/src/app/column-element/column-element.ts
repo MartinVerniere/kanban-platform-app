@@ -1,0 +1,39 @@
+import { Component, inject, input, output, signal } from '@angular/core';
+import { Column, ColumnService } from '../services/column-service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+
+@Component({
+	selector: 'app-column-element',
+	imports: [RouterLink],
+	templateUrl: './column-element.html',
+	styleUrl: './column-element.css',
+})
+export class ColumnElement {
+	router = inject(Router);
+	columnService = inject(ColumnService);
+	route = inject(ActivatedRoute);
+
+	column = input.required<Column>();
+
+	projectId = Number(this.route.snapshot.paramMap.get('projectId'));
+	boardId = Number(this.route.snapshot.paramMap.get('boardId'));
+
+	columnDeleted = output<void>();
+
+	error = signal<string | null>(null);
+
+	onRemoveColumn(columnId: number) {
+		this.columnService.deleteColumn(columnId).subscribe({
+			next: () => {
+				this.columnDeleted.emit();
+				this.error.set(null);
+			},
+			error: (response: HttpErrorResponse) => {
+				const errorObject = response.error.error;
+				console.log(errorObject);
+				this.error.set(errorObject.message);
+			}
+		});
+	}
+}
