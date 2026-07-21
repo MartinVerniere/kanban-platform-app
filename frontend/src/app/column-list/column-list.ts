@@ -1,10 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-export interface Column {
-	id: number,
-	name: string,
-}
+import { Column } from '../services/column-service';
 
 @Component({
   selector: 'app-column-list',
