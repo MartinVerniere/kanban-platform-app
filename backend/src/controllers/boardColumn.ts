@@ -52,6 +52,29 @@ boardColumnRouter.delete('/:id',
 
 		await prisma.boardColumn.delete({ where: { id: boardColumn.id } });
 
+		// Reset order values
+		const remainingColumns = await prisma.boardColumn.findMany({
+			where: { boardId: boardColumn.boardId },
+			orderBy: { order: "asc" },
+		});
+
+		await prisma.$transaction([
+			// See board > change column order endpoint for why to do this
+			...remainingColumns.map((column, index) =>
+				prisma.boardColumn.update({
+					where: { id: column.id },
+					data: { order: -(index + 1) },
+				})
+			),
+		
+			...remainingColumns.map((column, index) =>
+				prisma.boardColumn.update({
+					where: { id: column.id },
+					data: { order: index },
+				})
+			),
+		]);
+
 		return response.status(204).send();
 	}
 );

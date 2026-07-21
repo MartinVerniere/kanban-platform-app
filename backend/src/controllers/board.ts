@@ -93,7 +93,7 @@ boardRouter.put("/:id/columns/order",
 
 		await prisma.$transaction([
 			// Need to do this step because if not then prisma throws error "Unique constraint failed on the fields: (`"boardId"`, `"order"`)""
-			// So I first order columns with negative values, and then order them correctly
+			// So I first order columns with negative values, and then order them correctly with values in request
 			...columnOrder.map(column =>
 				prisma.boardColumn.update({
 					where: { id: column.id },
