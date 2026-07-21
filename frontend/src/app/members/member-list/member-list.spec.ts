@@ -93,14 +93,13 @@ describe('MemberList', () => {
 		expect(emitSpy).toHaveBeenCalled();
 	});
 
-	it('should remove member and emit memberRemoved when "remove member" button is clicked', async () => {
+	it('should emit removeMember when member is removed', async () => {
 		await createComponent();
 
 		const emitSpy = vi.spyOn(component.memberRemoved, 'emit');
 
-		component.onRemoveMember(10);
+		component.onMemberRemoved();
 
-		expect(projectServiceMock.removeMember).toHaveBeenCalledWith(1, 10);
-		expect(emitSpy).toHaveBeenCalledWith(10);
+		expect(emitSpy).toHaveBeenCalled();
 	});
 });
