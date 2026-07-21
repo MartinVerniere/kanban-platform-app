@@ -18,4 +18,8 @@ export class BoardDetails {
 	boardId = Number(this.route.snapshot.paramMap.get("boardId")!);
 
 	board = resource({ loader: () => firstValueFrom(this.boardService.getBoard(this.boardId)) });
+
+	async onDeleteColumn() {
+		this.board.reload();
+	}
 }

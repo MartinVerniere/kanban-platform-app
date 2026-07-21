@@ -4,6 +4,7 @@
 		<div class="column-id">Id: {{column.id}}</div>
 		<div class="column-name">Name: {{column.name}}</div>
 		<button type="button" (click)="onRemoveColumn(column.id)">Delete</button>
+		<div class="error"> {{ error() }}</div>
 	</div>
 	} @empty {
 	<div class="column-list-empty">No columns in this project</div>
