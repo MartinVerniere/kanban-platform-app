@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { BoardService } from '../services/board-service';
+import { BoardService } from '../../services/board-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ColumnModel } from '../column-form/column-form';
+import { ColumnModel } from '../columns/column-form/column-form';
 
 const API_URL = 'http://localhost:3000/api/columns';
 

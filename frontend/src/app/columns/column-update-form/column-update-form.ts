@@ -1,5 +1,5 @@
 import { Component, effect, inject, resource, signal } from '@angular/core';
-import { ColumnService } from '../services/column-service';
+import { ColumnService } from '../../services/column-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ColumnModel } from '../column-form/column-form';
