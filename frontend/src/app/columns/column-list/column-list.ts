@@ -1,5 +1,5 @@
 import { Component, inject, input, output, signal } from "@angular/core";
-import { RouterLink, Router, ActivatedRoute } from "@angular/router";
+import { RouterLink, ActivatedRoute } from "@angular/router";
 import { Column } from "../../services/columns/column-service";
 import { ColumnElement } from "../column-element/column-element";
 import { BoardService } from "../../services/boards/board-service";
@@ -12,7 +12,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 	styleUrl: './column-list.css',
 })
 export class ColumnList {
-	router = inject(Router);
 	route = inject(ActivatedRoute);
 	boardService = inject(BoardService);
 
@@ -53,7 +52,7 @@ export class ColumnList {
 		const columns = [...this.columnList()];
 
 		const index = columns.findIndex(c => c.id === columnId);
-		if (index > columns.length - 1) return;
+		if (index >= columns.length - 1) return;
 
 		[columns[index], columns[index + 1]] = [columns[index + 1], columns[index]]; //Swap columns position
 

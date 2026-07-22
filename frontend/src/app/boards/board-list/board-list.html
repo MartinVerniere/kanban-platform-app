@@ -9,7 +9,7 @@
 	<div class="board-list-items">
 		@for (board of boardList.value(); track board.id) {
 		<div class="board-list">
-			<app-board-element [projectId]="projectId()" [board]="board" (boardDeleted)="onDeleteBoard($event)">
+			<app-board-element [projectId]="projectId()" [board]="board" (boardDeleted)="onDeleteBoard()">
 			</app-board-element>
 		</div>
 		} @empty {
