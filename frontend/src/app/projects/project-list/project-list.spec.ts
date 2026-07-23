@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NEVER, of, throwError } from 'rxjs';
-import { provideRouter, Router } from '@angular/router';
 
 import { ProjectList } from './project-list';
 import { ProjectService } from '../../services/projects/project-service';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ProjectList', () => {
 	let fixture: ComponentFixture<ProjectList>;
@@ -15,15 +15,19 @@ describe('ProjectList', () => {
 		deleteProject: vi.fn()
 	};
 
-	const projects = [
-		{
-			id: 1,
-			name: 'Project One'
-		},
-		{
-			id: 2,
-			name: 'Project Two'
+	const activatedRouteMock = {
+		snapshot: {
+			paramMap: {
+				get: (key: string) => {
+					return null;
+				}
+			}
 		}
+	}
+
+	const projects = [
+		{ id: 1, name: 'Project One' },
+		{ id: 2, name: 'Project Two' }
 	];
 
 	async function createComponent(shouldAwait: boolean = true) {
@@ -45,11 +49,8 @@ describe('ProjectList', () => {
 		await TestBed.configureTestingModule({
 			imports: [ProjectList],
 			providers: [
-				{
-					provide: ProjectService,
-					useValue: projectServiceMock
-				},
-				provideRouter([])
+				{ provide: ProjectService, useValue: projectServiceMock },
+				{ provide: ActivatedRoute, useValue: activatedRouteMock } // Need to inject this apparently because of RouterLink
 			]
 		}).compileComponents();
 	});
@@ -88,9 +89,7 @@ describe('ProjectList', () => {
 	});
 
 	it('should show error state', async () => {
-		projectServiceMock.getProjects.mockReturnValue(
-			throwError(() => new Error())
-		);
+		projectServiceMock.getProjects.mockReturnValue(throwError(() => new Error()));
 
 		await createComponent();
 
@@ -105,7 +104,8 @@ describe('ProjectList', () => {
 
 		const reloadSpy = vi.spyOn(component.projectList, 'reload');
 
-		const deleteButton = Array.from(html.querySelectorAll('button'))
+		const deleteButton = Array
+			.from(html.querySelectorAll('button'))
 			.find(button => button.textContent?.includes('Delete project'));
 
 		expect(deleteButton).toBeTruthy();

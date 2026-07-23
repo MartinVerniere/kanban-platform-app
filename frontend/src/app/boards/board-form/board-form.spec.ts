@@ -8,8 +8,10 @@ import { ProjectService } from '../../services/projects/project-service';
 describe('BoardForm', () => {
 	let fixture: ComponentFixture<BoardForm>;
 	let component: BoardForm;
+	let html: HTMLElement;
 
-	let projectServiceMock: { createBoard: ReturnType<typeof vi.fn> };
+	let projectServiceMock = { createBoard: vi.fn() };
+	let routerMock = { navigate: vi.fn().mockResolvedValue(true) };
 
 	const activatedRouteMock = {
 		snapshot: {
@@ -25,6 +27,7 @@ describe('BoardForm', () => {
 	async function createComponent(shouldAwait: boolean = true) {
 		fixture = TestBed.createComponent(BoardForm);
 		component = fixture.componentInstance;
+		html = fixture.nativeElement;
 
 		fixture.detectChanges();
 
@@ -37,13 +40,12 @@ describe('BoardForm', () => {
 	beforeEach(async () => {
 		vi.clearAllMocks();
 
-		projectServiceMock = { createBoard: vi.fn() };
-
 		await TestBed.configureTestingModule({
 			imports: [BoardForm],
 			providers: [
 				{ provide: ProjectService, useValue: projectServiceMock },
 				{ provide: ActivatedRoute, useValue: activatedRouteMock },
+				{ provide: Router, useValue: routerMock }
 			]
 		}).compileComponents();
 	});
@@ -59,15 +61,12 @@ describe('BoardForm', () => {
 
 		await createComponent();
 
-		const router = TestBed.inject(Router);
-		const navigateSpy = vi.spyOn(router, 'navigate');
-
 		component.boardModel.set({ name: 'Board A' });
 
 		await component.onSubmit(new Event('submit'));
 
 		expect(projectServiceMock.createBoard).toHaveBeenCalledWith(1, { name: 'Board A' });
-		expect(navigateSpy).toHaveBeenCalledWith(['/projects', 1]);
+		expect(routerMock.navigate).toHaveBeenCalledWith(['/projects', 1]);
 		expect(component.boardModel()).toEqual({ name: '' });
 	});
 
@@ -98,16 +97,5 @@ describe('BoardForm', () => {
 		await component.onSubmit(new Event('submit'));
 
 		expect(component.error()).not.toBe('');
-	});
-
-	it('should navigate to /projects/projectId on cancel', async () => {
-		await createComponent();
-
-		const router = TestBed.inject(Router);
-		const navigateSpy = vi.spyOn(router, 'navigate');
-
-		component.onCancel();
-
-		expect(navigateSpy).toHaveBeenCalledWith(['/projects', 1]);
 	});
 });

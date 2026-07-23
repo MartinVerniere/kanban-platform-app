@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectForm } from './project-form';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/projects/project-service';
 import { of } from 'rxjs';
 
@@ -9,7 +9,18 @@ describe('ProjectForm', () => {
 	let fixture: ComponentFixture<ProjectForm>;
 	let component: ProjectForm;
 
-	let projectServiceMock: { createProject: ReturnType<typeof vi.fn> }
+	let projectServiceMock = { createProject: vi.fn() };
+	let routerMock = { navigate: vi.fn().mockResolvedValue(true) };
+
+	const activatedRouteMock = {
+		snapshot: {
+			paramMap: {
+				get: (key: string) => {
+					return null;
+				}
+			}
+		}
+	}
 
 	async function createComponent(shouldAwait: boolean = true) {
 		fixture = TestBed.createComponent(ProjectForm);
@@ -24,13 +35,14 @@ describe('ProjectForm', () => {
 	}
 
 	beforeEach(async () => {
-		projectServiceMock = { createProject: vi.fn() };
+		vi.clearAllMocks();
 
 		await TestBed.configureTestingModule({
 			imports: [ProjectForm],
 			providers: [
 				{ provide: ProjectService, useValue: projectServiceMock },
-				provideRouter([])
+				{ provide: Router, useValue: routerMock },
+				{ provide: ActivatedRoute, useValue: activatedRouteMock }
 			]
 		}).compileComponents();
 	});
@@ -46,9 +58,6 @@ describe('ProjectForm', () => {
 
 		await createComponent();
 
-		const router = TestBed.inject(Router);
-		const navigateSpy = vi.spyOn(router, 'navigate');
-
 		component.projectModel.set({
 			name: 'Project A',
 			key: 'PRO',
@@ -58,7 +67,7 @@ describe('ProjectForm', () => {
 		await component.onSubmit(new Event('submit'));
 
 		expect(projectServiceMock.createProject).toHaveBeenCalledWith({ name: 'Project A', key: 'PRO', description: '' });
-		expect(navigateSpy).toHaveBeenCalledWith(['/projects']);
+		expect(routerMock.navigate).toHaveBeenCalledWith(['/projects']);
 		expect(component.projectModel()).toEqual({ name: '', key: '', description: '' });
 	});
 

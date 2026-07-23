@@ -9,9 +9,14 @@ describe('BoardUpdateForm', () => {
 	let fixture: ComponentFixture<BoardUpdateForm>;
 	let component: BoardUpdateForm;
 
-	let boardServiceMock: {
-		getBoard: ReturnType<typeof vi.fn>,
-		updateBoard: ReturnType<typeof vi.fn>
+	const currentBoard = {
+		id: 1,
+		name: "Board A"
+	}
+
+	const boardServiceMock = {
+		getBoard: vi.fn().mockReturnValue(of(currentBoard)),
+		updateBoard: vi.fn().mockReturnValue(of({}))
 	};
 
 	const activatedRouteMock = {
@@ -25,17 +30,12 @@ describe('BoardUpdateForm', () => {
 			}
 		}
 	}
-
-	const currentBoard = {
-		id: 1,
-		name: "Board A"
-	}
+	
+	let routerMock = { navigate: vi.fn().mockResolvedValue(true) };
 
 	async function createComponent(shouldAwait: boolean = true) {
 		fixture = TestBed.createComponent(BoardUpdateForm);
 		component = fixture.componentInstance;
-
-		console.log(component.boardId);
 
 		fixture.detectChanges();
 
@@ -48,16 +48,12 @@ describe('BoardUpdateForm', () => {
 	beforeEach(async () => {
 		vi.clearAllMocks();
 
-		boardServiceMock = {
-			getBoard: vi.fn().mockReturnValue(of(currentBoard)),
-			updateBoard: vi.fn().mockReturnValue(of({}))
-		};
-
 		await TestBed.configureTestingModule({
 			imports: [BoardUpdateForm],
 			providers: [
 				{ provide: BoardService, useValue: boardServiceMock },
 				{ provide: ActivatedRoute, useValue: activatedRouteMock },
+				{ provide: Router, useValue: routerMock },
 			]
 		}).compileComponents();
 	});
@@ -68,13 +64,13 @@ describe('BoardUpdateForm', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('loads board on init', async () => {
+	it('should load board', async () => {
 		await createComponent();
 
 		expect(boardServiceMock.getBoard).toHaveBeenCalledWith(1);
 	});
 
-	it('loads existing board into the form', async () => {
+	it('should load existing board into the form', async () => {
 		await createComponent();
 
 		expect(component.boardModel()).toEqual({ name: 'Board A' });
@@ -83,15 +79,12 @@ describe('BoardUpdateForm', () => {
 	it('should update board when valid form data, then redirect to /projects/projectId and clear form', async () => {
 		await createComponent();
 
-		const router = TestBed.inject(Router);
-		const navigateSpy = vi.spyOn(router, 'navigate');
-
 		component.boardModel.set({ name: 'Updated A' });
 
 		await component.onSubmit(new Event('submit'));
 
 		expect(boardServiceMock.updateBoard).toHaveBeenCalledWith(currentBoard.id, { name: 'Updated A' });
-		expect(navigateSpy).toHaveBeenCalledWith(['/projects', 1]);
+		expect(routerMock.navigate).toHaveBeenCalledWith(['/projects', 1]);
 		expect(component.boardModel()).toEqual({ name: '' });
 	});
 
@@ -124,16 +117,5 @@ describe('BoardUpdateForm', () => {
 		await component.onSubmit(new Event('submit'));
 
 		expect(component.error()).not.toBe('');
-	});
-
-	it('should navigate to /projects/projectId on cancel', async () => {
-		await createComponent();
-
-		const router = TestBed.inject(Router);
-		const navigateSpy = vi.spyOn(router, 'navigate');
-
-		component.onCancel();
-
-		expect(navigateSpy).toHaveBeenCalledWith(['/projects', 1]);
 	});
 });

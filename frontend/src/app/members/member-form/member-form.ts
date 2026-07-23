@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, inject, input, output, resource, computed, signal } from "@angular/core";
 import { FormField, form, required, submit } from "@angular/forms/signals";
-import { Router } from "@angular/router";
 import { firstValueFrom } from "rxjs";
 import { ProjectService, Project } from "../../services/projects/project-service";
 import { UserService } from "../../services/users/user-service";
@@ -18,7 +17,6 @@ export interface MemberModel {
 })
 
 export class MemberForm {
-	router = inject(Router);
 	projectService = inject(ProjectService);
 	userService = inject(UserService);
 

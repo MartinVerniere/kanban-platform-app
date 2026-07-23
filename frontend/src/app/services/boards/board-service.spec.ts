@@ -6,12 +6,24 @@ import { BoardService } from './board-service';
 
 const boardA = {
 	id: 1,
-	name: "Board A"
+	name: "Board A",
 }
 
 const boardB = {
 	id: 2,
 	name: "Board B"
+}
+
+const column1 = {
+	id: 1,
+	name: "ToDo",
+	order: 1,
+}
+
+const column2 = {
+	id: 2,
+	name: "Finished",
+	order: 2,
 }
 
 describe('BoardService', () => {
@@ -67,6 +79,34 @@ describe('BoardService', () => {
 		const request = httpMock.expectOne(`http://localhost:3000/api/boards/${boardB.id}`);
 
 		expect(request.request.method).toBe('DELETE');
+
+		request.flush({});
+	});
+
+	it('should create column', () => {
+		const column = { name: "ToDo" };
+		const expectedResponse = column1;
+
+		service.createColumn(boardB.id, column).subscribe();
+
+		const request = httpMock.expectOne(`http://localhost:3000/api/boards/${boardB.id}/columns`);
+
+		expect(request.request.method).toBe('POST');
+
+		request.flush(expectedResponse);
+	});
+
+	it('should change column order', () => {
+		const columnOrder = [
+			{ id: 1, order: 2 },
+			{ id: 2, order: 1 }
+		];
+
+		service.changeColumnOrder(boardB.id, { columnOrder }).subscribe();
+
+		const request = httpMock.expectOne(`http://localhost:3000/api/boards/${boardB.id}/columns/order`);
+
+		expect(request.request.method).toBe('PUT');
 
 		request.flush({});
 	});

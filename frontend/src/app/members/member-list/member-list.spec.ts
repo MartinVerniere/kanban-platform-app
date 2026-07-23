@@ -47,8 +47,6 @@ describe('MemberList', () => {
 	beforeEach(async () => {
 		vi.clearAllMocks();
 
-		projectServiceMock.removeMember.mockReturnValue(of({}));
-
 		await TestBed.configureTestingModule({
 			imports: [MemberList],
 			providers: [
@@ -94,6 +92,8 @@ describe('MemberList', () => {
 	});
 
 	it('should emit removeMember when member is removed', async () => {
+		projectServiceMock.removeMember.mockReturnValue(of({}));
+		
 		await createComponent();
 
 		const emitSpy = vi.spyOn(component.memberRemoved, 'emit');

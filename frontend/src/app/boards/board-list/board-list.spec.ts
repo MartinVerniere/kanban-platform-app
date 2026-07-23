@@ -2,8 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardList } from './board-list';
 import { NEVER, of, throwError } from 'rxjs';
-import { provideRouter } from '@angular/router';
-import { BoardService } from '../../services/boards/board-service';
+import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/projects/project-service';
 
 describe('BoardList', () => {
@@ -12,7 +11,17 @@ describe('BoardList', () => {
 	let html: HTMLElement;
 
 	const projectServiceMock = { getBoards: vi.fn() };
-	const boardServiceMock = { deleteBoard: vi.fn() };
+
+	const activatedRouteMock = {
+		snapshot: {
+			paramMap: {
+				get: (key: string) => {
+					if (key === 'id') return '1';
+					return null;
+				}
+			}
+		}
+	}
 
 	const projectId = 1;
 
@@ -49,8 +58,7 @@ describe('BoardList', () => {
 			imports: [BoardList],
 			providers: [
 				{ provide: ProjectService, useValue: projectServiceMock },
-				{ provide: BoardService, useValue: boardServiceMock },
-				provideRouter([])
+				{ provide: ActivatedRoute, useValue: activatedRouteMock },
 			]
 		}).compileComponents();
 	});
@@ -94,25 +102,15 @@ describe('BoardList', () => {
 		expect(html.textContent).toContain('Error loading boards');
 	});
 
-	it('should delete board and reload list', async () => {
+	it('should reload list on board deleted', async () => {
 		projectServiceMock.getBoards.mockReturnValue(of(boards));
-		boardServiceMock.deleteBoard.mockReturnValue(of({}));
 
 		await createComponent();
 
 		const reloadSpy = vi.spyOn(component.boardList, 'reload');
 
-		const deleteButton = Array
-			.from(html.querySelectorAll('button'))
-			.find(button => button.textContent?.includes('Delete'));
+		component.onDeleteBoard();
 
-		expect(deleteButton).toBeTruthy();
-
-		deleteButton!.click();
-
-		await fixture.whenStable();
-
-		expect(boardServiceMock.deleteBoard).toHaveBeenCalledWith(1);
 		expect(reloadSpy).toHaveBeenCalled();
 	});
 });

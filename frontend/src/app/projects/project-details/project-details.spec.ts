@@ -53,8 +53,6 @@ describe('ProjectDetails', () => {
 	beforeEach(async () => {
 		vi.clearAllMocks();
 
-		projectServiceMock.getProject.mockReturnValue(of(project));
-
 		await TestBed.configureTestingModule({
 			imports: [ProjectDetails],
 			providers: [
@@ -65,12 +63,16 @@ describe('ProjectDetails', () => {
 	});
 
 	it('should create', async () => {
+		projectServiceMock.getProject.mockReturnValue(of(project));
+
 		await createComponent();
 
 		expect(component).toBeTruthy();
 	});
 
 	it('should load project', async () => {
+		projectServiceMock.getProject.mockReturnValue(of(project));
+
 		await createComponent();
 
 		expect(projectServiceMock.getProject).toHaveBeenCalledWith(1);
@@ -94,6 +96,8 @@ describe('ProjectDetails', () => {
 	});
 
 	it('should reload project after member added', async () => {
+		projectServiceMock.getProject.mockReturnValue(of(project));
+
 		await createComponent();
 
 		const reloadSpy = vi.spyOn(component.project, 'reload');
@@ -104,6 +108,8 @@ describe('ProjectDetails', () => {
 	});
 
 	it('should reload project after member removed', async () => {
+		projectServiceMock.getProject.mockReturnValue(of(project));
+		
 		await createComponent();
 
 		const reloadSpy = vi.spyOn(component.project, 'reload');

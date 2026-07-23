@@ -1,19 +1,35 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BoardElement } from './board-element';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
+import { Board, BoardService } from '../../services/boards/board-service';
+import { of } from 'rxjs';
 
 describe('BoardElement', () => {
 	let fixture: ComponentFixture<BoardElement>;
 	let component: BoardElement;
 	let html: HTMLElement;
 
-	const board = {
-		id: 1,
-		name: 'Board A',
+	const boardServiceMock = { deleteBoard: vi.fn() };
+
+	const activatedRouteMock = {
+		snapshot: {
+			paramMap: {
+				get: (key: string) => {
+					if (key === 'projectId') return '1';
+					return null;
+				}
+			}
+		}
 	};
 
-	const projectId = 1;
+	const board: Board = {
+		id: 1,
+		name: 'Board A',
+		columns: [],
+	};
+
+	const projectId: number = 1;
 
 	async function createComponent(shouldAwait: boolean = true) {
 		fixture = TestBed.createComponent(BoardElement);
@@ -37,7 +53,8 @@ describe('BoardElement', () => {
 		await TestBed.configureTestingModule({
 			imports: [BoardElement],
 			providers: [
-				provideRouter([])
+				{ provide: BoardService, useValue: boardServiceMock },
+				{ provide: ActivatedRoute, useValue: activatedRouteMock }
 			]
 		}).compileComponents();
 	});
@@ -54,13 +71,24 @@ describe('BoardElement', () => {
 		expect(html.textContent).toContain('Board A');
 	});
 
-	it('should emit boardDeleted on clicking "Delete" button', async () => {
+	it('should delete board and emit boardDeleted on clicking "Delete" button', async () => {
+		boardServiceMock.deleteBoard.mockReturnValue(of({}));
+
 		await createComponent();
 
 		const emitSpy = vi.spyOn(component.boardDeleted, 'emit');
 
-		component.onBoardDeleted(1);
+		const deleteButton = Array
+			.from(html.querySelectorAll('button'))
+			.find(button => button.textContent?.includes('Delete'));
 
-		expect(emitSpy).toHaveBeenCalledWith(1);
+		expect(deleteButton).toBeTruthy();
+
+		deleteButton!.click();
+
+		await fixture.whenStable();
+
+		expect(boardServiceMock.deleteBoard).toHaveBeenCalledWith(1);
+		expect(emitSpy).toHaveBeenCalled();
 	});
 });
