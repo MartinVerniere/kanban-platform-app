@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { AuthService } from './services/auth-service';
+import { AuthService } from './services/auth/auth-service';
 
 describe('App', () => {
 	let fixture: ComponentFixture<App>;

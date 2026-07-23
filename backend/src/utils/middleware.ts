@@ -157,7 +157,16 @@ export const boardExtractor = async (
 	const requestBoardId = Number(request.params.id);
 	if (!Number.isInteger(requestBoardId)) throw new ApiError(400, "INVALID_BOARD_ID", "Invalid board id.");
 
-	const board = await prisma.board.findUnique({ where: { id: requestBoardId } });
+	const board = await prisma.board.findUnique({
+		where: { id: requestBoardId },
+		include: {
+			columns: {
+				orderBy: {
+					order: "asc"
+				}
+			}
+		}
+	});
 	if (!board) throw new ApiError(404, "BOARD_NOT_FOUND", "Board not found.");
 
 	request.board = board;
@@ -187,6 +196,57 @@ export const requireBoardProjectMember = async (
 }
 
 export const requireBoardProjectAdminRole = async (
+	request: Request,
+	_response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const projectMember = request.projectMember!;
+	if (projectMember.role !== ProjectRole.ADMIN) throw new ApiError(403, "INSUFFICIENT_PERMISSIONS", "You must be a project admin to perform this action.");
+
+	next();
+};
+
+export const columnExtractor = async (
+	request: Request,
+	_response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const requestBoardColumnId = Number(request.params.id);
+	if (!Number.isInteger(requestBoardColumnId)) throw new ApiError(400, "INVALID_BOARD_COLUMN_ID", "Invalid column id.");
+
+	const boardColumn = await prisma.boardColumn.findUnique({ where: { id: requestBoardColumnId } });
+	if (!boardColumn) throw new ApiError(404, "BOARD_COLUMN_NOT_FOUND", "Column not found.");
+
+	request.boardColumn = boardColumn;
+
+	next();
+};
+
+export const requireColumnMember = async (
+	request: Request,
+	_response: Response,
+	next: NextFunction
+): Promise<void> => {
+	const userId = request.user.id;
+	const boardColumn = request.boardColumn!;
+
+	const board = await prisma.board.findUnique({ where: { id: boardColumn.boardId } });
+	if (!board) throw new ApiError(404, "BOARD_NOT_FOUND", "Board not found.");
+
+	const membership = await prisma.projectMember.findFirst({
+		where: {
+			projectId: board.projectId,
+			userId: userId,
+		},
+	});
+	if (!membership) throw new ApiError(403, "PROJECT_ACCESS_DENIED", "You do not have access to this project.");
+
+	request.projectMember = membership;
+
+	next();
+}
+
+export const requireColumnAdmin = async (
 	request: Request,
 	_response: Response,
 	next: NextFunction
